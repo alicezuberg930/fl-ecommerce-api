@@ -1,0 +1,10 @@
+{
+    "statusCode": 200,
+    "message": "Lấy dữ liệu thành công",
+    "data": {},
+    "paginate": {
+        "totalPages": 1,
+        "pageSize": 10,
+        "currentPage": 1
+    }
+}

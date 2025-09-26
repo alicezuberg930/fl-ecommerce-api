@@ -2,10 +2,10 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose"
 import { HydratedDocument, Schema as MongooseSchema } from "mongoose"
 import { category } from "../dto/enum";
 
-export type PostDocument = HydratedDocument<Post>
+export type ProductDocument = HydratedDocument<Product>
 
 @Schema({ timestamps: true })
-export class Post {
+export class Product {
     @Prop()
     title: string;
 
@@ -25,4 +25,4 @@ export class Post {
     images: string[]
 }
 
-export const PostSchema = SchemaFactory.createForClass(Post)
+export const ProductSchema = SchemaFactory.createForClass(Product)

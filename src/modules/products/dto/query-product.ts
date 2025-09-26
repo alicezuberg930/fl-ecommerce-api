@@ -2,9 +2,6 @@ import { IsOptional } from "class-validator"
 
 export class QueryProduct {
     @IsOptional()
-    category: string
-
-    @IsOptional()
     page: number
 
     @IsOptional()
@@ -12,4 +9,10 @@ export class QueryProduct {
 
     @IsOptional()
     name: string
+
+    @IsOptional()
+    category: string
+
+    @IsOptional()
+    brand: string
 }

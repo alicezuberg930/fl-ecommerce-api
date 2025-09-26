@@ -1,19 +1,19 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Post, PostDocument } from './schemas/product.schema'
+import { Product, ProductDocument } from './schemas/product.schema'
 import { Model, Types } from 'mongoose'
 import { PostData } from './dto/create-product.dto'
 import { UpdatePostData } from './dto/update-product.dto'
 import { QueryProduct } from './dto/query-product'
-import { FileService } from '../file/file.service'
+import { FileService } from '../files/file.service'
 
 @Injectable()
 export class ProductsService {
-  constructor(@InjectModel(Post.name) private productModel: Model<PostDocument>, private fileService: FileService) { }
+  constructor(@InjectModel(Product.name) private productModel: Model<ProductDocument>, private fileService: FileService) { }
 
-  async create(postData: PostData) {
+  async create(data: PostData) {
     try {
-      const post = await this.productModel.create({ ...postData })
+      const post = await this.productModel.create({ ...data })
       return post
     } catch (error) {
       throw new BadRequestException(error)
@@ -22,9 +22,9 @@ export class ProductsService {
 
   async findAll(query: QueryProduct) {
     try {
-      const page: number = +(query.page ?? 1)
+      const currentPage: number = +(query.page ?? 1)
       const pageSize: number = +(query.pageSize ?? 10)
-      const skip = (page - 1) * pageSize
+      const skip = (currentPage - 1) * pageSize
       // filter options
       const filter: Record<string, any> = {}
       if (query.name) filter.name = query.name
@@ -36,7 +36,7 @@ export class ProductsService {
         paginate: {
           totalPages,
           pageSize,
-          currentPage: page
+          currentPage
         }
       }
     } catch (error) {
@@ -54,11 +54,11 @@ export class ProductsService {
     }
   }
 
-  async update(id: string, postData: UpdatePostData) {
+  async update(id: string, data: UpdatePostData) {
     try {
       const post = await this.productModel.findOne({ _id: id })
       await this.fileService.delete([...post.images, post.cover])
-      await post.updateOne({ ...postData }, { new: true })
+      await post.updateOne({ ...data }, { new: true })
       if (!post) throw new NotFoundException('Không tìm thấy bài đăng')
       return post
     } catch (error) {

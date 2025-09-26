@@ -37,9 +37,9 @@ export class UsersService {
 
   async findAll(query: UserQuery) {
     try {
-      const page: number = +(query.page ?? 1)
+      const currentPage: number = +(query.page ?? 1)
       const pageSize: number = +(query.pageSize ?? 10)
-      const skip = (page - 1) * pageSize
+      const skip = (currentPage - 1) * pageSize
       // filter options
       const filter: Record<string, any> = {}
       if (query.name) filter.name = query.name
@@ -66,7 +66,7 @@ export class UsersService {
         paginate: {
           totalPages,
           pageSize,
-          currentPage: page
+          currentPage
         }
       }
     } catch (error) {

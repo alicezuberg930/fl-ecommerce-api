@@ -4,7 +4,7 @@ import { UpdateBannerData } from './dto/update-banner.dto'
 import { InjectModel } from '@nestjs/mongoose'
 import { Banner, BannerDocument } from './shemas/banner.schema'
 import { Model } from 'mongoose'
-import { FileService } from '../file/file.service'
+import { FileService } from '../files/file.service'
 
 @Injectable()
 export class BannersService {

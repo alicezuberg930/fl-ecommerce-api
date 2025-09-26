@@ -6,7 +6,7 @@ import { UpdatePostData } from './dto/update-product.dto'
 import { QueryProduct } from './dto/query-product'
 
 @Controller('products')
-export class ProductsdController {
+export class ProductsController {
   constructor(private readonly productsService: ProductsService) { }
 
   @ResponseMessage('Tạo bài đăng thành công')

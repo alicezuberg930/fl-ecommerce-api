@@ -3,7 +3,7 @@ import { BannersService } from './banners.service';
 import { BannersController } from './banners.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Banner, BannerSchema } from './shemas/banner.schema';
-import { FileService } from '../file/file.service';
+import { FileService } from '../files/file.service';
 
 @Module({
   imports: [MongooseModule.forFeature([{ name: Banner.name, schema: BannerSchema }])],

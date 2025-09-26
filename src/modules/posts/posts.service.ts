@@ -5,7 +5,7 @@ import { Model, Types } from 'mongoose'
 import { PostData } from './dto/create-post.dto'
 import { UpdatePostData } from './dto/update-post.dto'
 import { QueryPost } from './dto/query-post'
-import { FileService } from '../file/file.service'
+import { FileService } from '../files/file.service'
 
 @Injectable()
 export class PostsService {

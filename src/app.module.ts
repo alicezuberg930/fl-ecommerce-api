@@ -11,11 +11,12 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
 import { AllExceptionsFilter } from './common/exceptions/exception.filter';
 import { PostsModule } from './modules/posts/posts.module';
 import { BannersModule } from './modules/banners/banners.module';
-import { FileModule } from './modules/file/file.module';
+import { FileModule } from './modules/files/file.module';
 import { InformationModule } from './modules/information/information.module';
-import { EventsModule } from './modules/events/events.module';
+import { CategoriesModule } from './modules/categories/categories.module';
 import { IpWhitelistMiddleware } from './common/middleware/ip.whitelist';
-import { MGEsModule } from './modules/mges/mges.module';
+import { BrandModule } from './modules/brands/brands.module';
+import { ProductsModule } from './modules/products/products.module';
 
 @Module({
   imports: [
@@ -23,13 +24,9 @@ import { MGEsModule } from './modules/mges/mges.module';
     AuthModule,
     InformationModule,
     PostsModule,
-    FileModule,
     BannersModule,
-    EventsModule,
-    MGEsModule,
-    // Env config module
+    CategoriesModule,
     ConfigModule.forRoot({ isGlobal: true }),
-    // Mongodb config mondule
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -37,6 +34,9 @@ import { MGEsModule } from './modules/mges/mges.module';
       }),
       inject: [ConfigService],
     }),
+    FileModule,
+    BrandModule,
+    ProductsModule,
   ],
   controllers: [AppController],
   providers: [

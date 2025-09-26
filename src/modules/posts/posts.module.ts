@@ -3,7 +3,7 @@ import { PostsService } from './posts.service'
 import { PostsController } from './posts.controller'
 import { MongooseModule } from '@nestjs/mongoose'
 import { Post, PostSchema } from './schemas/post.schema'
-import { FileService } from '../file/file.service'
+import { FileService } from '../files/file.service'
 
 @Module({
   imports: [

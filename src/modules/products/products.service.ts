@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { InjectModel } from '@nestjs/mongoose'
 import { Product, ProductDocument } from './schemas/product.schema'
 import { Model, Types } from 'mongoose'
-import { PostData } from './dto/create-product.dto'
+import { ProductData } from './dto/create-product.dto'
 import { UpdatePostData } from './dto/update-product.dto'
 import { QueryProduct } from './dto/query-product'
 import { FileService } from '../files/file.service'
@@ -11,10 +11,12 @@ import { FileService } from '../files/file.service'
 export class ProductsService {
   constructor(@InjectModel(Product.name) private productModel: Model<ProductDocument>, private fileService: FileService) { }
 
-  async create(data: PostData) {
+  async create(data: ProductData, files: Express.Multer.File[]) {
     try {
-      const post = await this.productModel.create({ ...data })
-      return post
+      let images: string | string[] = []
+      if (files) images = await this.fileService.upload(files, 'products')
+      const product = await this.productModel.create({ ...data, images })
+      return product
     } catch (error) {
       throw new BadRequestException(error)
     }
@@ -30,7 +32,18 @@ export class ProductsService {
       if (query.name) filter.name = query.name
       const totalProducts = await this.productModel.countDocuments(filter)
       const totalPages = Math.ceil(totalProducts / pageSize)
-      const products = await this.productModel.find(filter).limit(pageSize).skip(skip)
+      const products = await this.productModel.find(filter)
+        .populate(['ratings',
+          {
+            path: 'brand',
+            select: '-createdAt -updatedAt'
+          },
+          {
+            path: 'category',
+            select: '-parentCategoryId -subCategories -createdAt -updatedAt'
+          }]
+        )
+        .limit(pageSize).skip(skip)
       return {
         data: products,
         paginate: {
@@ -44,34 +57,34 @@ export class ProductsService {
     }
   }
 
-  async findOne(id: string) {
+  async findOne(_id: string) {
     try {
-      let post = await this.productModel.findById(id)
-      if (!post) throw new NotFoundException('Không tìm thấy bài đăng')
-      return post
+      let product = await this.productModel.findById({ _id })
+      if (!product) throw new NotFoundException('Product not found')
+      return product
     } catch (error) {
       throw new BadRequestException(error)
     }
   }
 
-  async update(id: string, data: UpdatePostData) {
+  async update(_id: string, data: UpdatePostData) {
     try {
-      const post = await this.productModel.findOne({ _id: id })
-      await this.fileService.delete([...post.images, post.cover])
-      await post.updateOne({ ...data }, { new: true })
-      if (!post) throw new NotFoundException('Không tìm thấy bài đăng')
-      return post
+      const product = await this.productModel.findById({ _id })
+      await this.fileService.delete(product.images)
+      await product.updateOne({ ...data }, { new: true })
+      if (!product) throw new NotFoundException('Product not found')
+      return product
     } catch (error) {
       throw new BadRequestException(error)
     }
   }
 
-  async remove(id: string) {
+  async remove(_id: string) {
     try {
-      const post = await this.productModel.findOneAndDelete({ _id: id })
-      if (!post) throw new NotFoundException('Không tìm thấy bài đăng')
-      await this.fileService.delete([...post.images, post.cover])
-      return post
+      const product = await this.productModel.findOneAndDelete({ _id })
+      if (!product) throw new NotFoundException('Product not found')
+      await this.fileService.delete(product.images)
+      return product
     } catch (error) {
       throw new BadRequestException(error)
     }

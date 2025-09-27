@@ -5,11 +5,11 @@ export type CategoryDocument = HydratedDocument<Category>
 
 @Schema({ timestamps: true })
 export class Category {
-    @Prop()
+    @Prop({ required: [true, "Category name must not be empty"] })
     name: string;
 
-    @Prop()
-    image: string;
+    @Prop({ required: [true, "Category logo must not be empty"] })
+    logo: string;
 
     @Prop()
     description: string;

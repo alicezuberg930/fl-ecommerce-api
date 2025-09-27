@@ -9,7 +9,7 @@ import { MulterModule } from '@nestjs/platform-express'
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Event.name, schema: CategorySchema }]),
+    MongooseModule.forFeature([{ name: Category.name, schema: CategorySchema }]),
     MulterModule.registerAsync({ useClass: MulterConfigService })
   ],
   controllers: [CategoriesController],

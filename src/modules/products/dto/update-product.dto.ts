@@ -1,4 +1,4 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { PostData } from './create-product.dto';
+import { ProductData } from './create-product.dto';
 
-export class UpdatePostData extends PartialType(PostData) { }
+export class UpdatePostData extends PartialType(ProductData) { }

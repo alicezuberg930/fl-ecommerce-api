@@ -7,9 +7,6 @@ export class CreateCategoryData {
     @IsOptional()
     description: string
 
-    @IsNotEmpty({ message: "Logo cannot be empty" })
-    logo: string
-
     @IsOptional()
     parentCategoryId: string
 }

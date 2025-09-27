@@ -1,39 +1,42 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common'
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseInterceptors, UploadedFiles } from '@nestjs/common'
 import { ProductsService } from './products.service'
 import { ResponseMessage } from 'src/common/decorators/public.decorator'
-import { PostData } from './dto/create-product.dto'
+import { ProductData } from './dto/create-product.dto'
 import { UpdatePostData } from './dto/update-product.dto'
 import { QueryProduct } from './dto/query-product'
+import { FilesInterceptor } from '@nestjs/platform-express'
+import { multerOptions } from 'src/common/helpers/options/multer.options'
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) { }
 
-  @ResponseMessage('Tạo bài đăng thành công')
+  @ResponseMessage('Product created successfully')
+  @UseInterceptors(FilesInterceptor("images", Infinity, multerOptions({ allowedFields: [] })))
   @Post()
-  create(@Body() postData: PostData) {
-    return this.productsService.create(postData)
+  create(@UploadedFiles() files: Express.Multer.File[], @Body() data: ProductData) {
+    return this.productsService.create(data, files)
   }
 
-  @ResponseMessage('Lấy danh sách bài đăng thành công')
+  @ResponseMessage('Product list fetched successfully')
   @Get()
   findAll(@Query() query: QueryProduct) {
     return this.productsService.findAll(query)
   }
 
-  @ResponseMessage('Lấy bài đăng thành công')
+  @ResponseMessage('Product details fetched successfully')
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productsService.findOne(id)
   }
 
-  @ResponseMessage('Cập nhật bài đăng thành công')
+  @ResponseMessage('Product updated successfully')
   @Patch(':id')
   update(@Param('id') id: string, @Body() postData: UpdatePostData) {
     return this.productsService.update(id, postData)
   }
 
-  @ResponseMessage('Xóa bài đăng thành công')
+  @ResponseMessage('Product deleted successfully')
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.productsService.remove(id)

@@ -1,17 +1,20 @@
-import { Controller, Get, Post, Delete, Body, Param, Patch } from '@nestjs/common'
+import { Controller, Get, Post, Delete, Body, Param, Patch, UseInterceptors, UploadedFile } from '@nestjs/common'
 import { CategoriesService } from './categories.service'
 import { CreateCategoryData } from './dto/create-category.dto'
 import { UpdateCategoryData } from './dto/update-category.dto'
 import { ResponseMessage } from 'src/common/decorators/public.decorator'
+import { FileInterceptor } from '@nestjs/platform-express'
+import { multerOptions } from 'src/common/helpers/options/multer.options'
 
 @Controller('categories')
 export class CategoriesController {
   constructor(private readonly categoryService: CategoriesService) { }
 
   @ResponseMessage('Tạo ngành hàng thành công')
+  @UseInterceptors(FileInterceptor("logo", multerOptions({ allowedFields: [] })))
   @Post()
-  create(@Body() categoryData: CreateCategoryData) {
-    return this.categoryService.create(categoryData)
+  create(@UploadedFile() file: Express.Multer.File, @Body() data: CreateCategoryData) {
+    return this.categoryService.create(data, file)
   }
 
   @ResponseMessage('Lấy danh sách ngành hàng thành công')

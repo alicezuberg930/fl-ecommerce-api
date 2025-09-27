@@ -4,23 +4,26 @@ import { Model, Types } from 'mongoose'
 import { CreateCategoryData } from './dto/create-category.dto'
 import { UpdateCategoryData } from './dto/update-category.dto'
 import { Category, CategoryDocument } from './shemas/category.schema'
+import { FileService } from '../files/file.service'
 
 @Injectable()
 export class CategoriesService {
-  constructor(@InjectModel(Category.name) private categoryModel: Model<CategoryDocument>) { }
+  constructor(@InjectModel(Category.name) private categoryModel: Model<CategoryDocument>, private fileService: FileService) { }
 
-  async create(categoryData: CreateCategoryData) {
-    let { parentCategoryId } = categoryData
+  async create(data: CreateCategoryData, file: Express.Multer.File) {
     try {
+      let logo = null
+      if (file) logo = await this.fileService.upload(file, 'categories')
+      let { parentCategoryId } = data
       if (parentCategoryId) {
         const parentCategory = await this.categoryModel.findById(parentCategoryId)
         if (!parentCategory) throw new NotFoundException('Parent category not found')
-        const childCategory = await this.categoryModel.create({ ...categoryData, parentCategoryId: new Types.ObjectId(parentCategoryId) })
+        const childCategory = await this.categoryModel.create({ ...data, logo, parentCategoryId: new Types.ObjectId(parentCategoryId) })
         parentCategory.subCategories.push(childCategory._id)
         await parentCategory.save()
         return childCategory
       }
-      const category = await this.categoryModel.create({ ...categoryData })
+      const category = await this.categoryModel.create({ ...data, logo })
       return category
     } catch (error) {
       throw new BadRequestException(error)
@@ -37,7 +40,7 @@ export class CategoriesService {
     try {
       const parentCategories = await this.categoryModel.find({ parentCategoryId: null })
       const allCategories = await Promise.all(parentCategories.map(category => this.populateChildren(category._id)))
-      return { payload: allCategories }
+      return allCategories
     } catch (error) {
       throw new BadRequestException(error)
     }
@@ -58,6 +61,7 @@ export class CategoriesService {
     const children = await this.categoryModel.find({ parentCategoryId })
     for (const child of children) {
       await this.deleteChildren(child._id)
+      await this.fileService.delete(child.logo)
       await this.categoryModel.findByIdAndDelete(child._id)
     }
   }
@@ -70,7 +74,9 @@ export class CategoriesService {
         await this.categoryModel.findByIdAndUpdate(category.parentCategoryId, { $pull: { subCategories: category._id } })
       }
       await this.deleteChildren(category._id)
+      await this.fileService.delete(category.logo)
       await this.categoryModel.findByIdAndDelete(id)
+      return category
     } catch (error) {
       throw new BadRequestException(error)
     }
@@ -98,6 +104,7 @@ export class CategoriesService {
         }
       }
       await category.updateOne({ ...categoryData, parentCategoryId: new Types.ObjectId(parentCategoryId) })
+      return category
     } catch (error) {
       throw new BadRequestException(error)
     }

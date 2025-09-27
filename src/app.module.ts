@@ -17,6 +17,7 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { IpWhitelistMiddleware } from './common/middleware/ip.whitelist';
 import { BrandModule } from './modules/brands/brands.module';
 import { ProductsModule } from './modules/products/products.module';
+import { RatingModule } from './modules/ratings/ratings.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { ProductsModule } from './modules/products/products.module';
     FileModule,
     BrandModule,
     ProductsModule,
+    RatingModule
   ],
   controllers: [AppController],
   providers: [

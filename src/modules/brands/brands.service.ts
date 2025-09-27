@@ -12,7 +12,7 @@ export class BrandService {
   async create(data: BrandData, file: Express.Multer.File) {
     try {
       let logo = null
-      if (file) logo = await this.fileService.upload(file)
+      if (file) logo = await this.fileService.upload(file, 'brands')
       const brand = await this.brandModel.create({ ...data, logo })
       return brand
     } catch (error) {

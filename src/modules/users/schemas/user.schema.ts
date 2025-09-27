@@ -8,22 +8,22 @@ export type UserDocument = HydratedDocument<User>
 
 @Schema({ timestamps: true })
 export class User {
-    @Prop({ required: true })
+    @Prop({ required: [true, "User name is requierd"] })
     name: string
 
-    @Prop()
+    @Prop({ required: [true, "User email is requierd"] })
     email: string
 
-    @Prop()
+    @Prop({ required: [true, "User password is requierd"] })
     password: string
 
     @Prop({ length: 10 })
     phone: string
 
-    @Prop()
+    @Prop({ default: "" })
     address: string
 
-    @Prop()
+    @Prop({ default: "" })
     avatar: string
 
     @Prop({ default: "LOCAL" })

@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { User, UserDocument } from './schemas/user.schema'
-import { Model, Types } from 'mongoose'
+import mongoose, { Model, Types } from 'mongoose'
 import { InjectModel } from '@nestjs/mongoose'
 import { hashPassword } from 'src/common/utils'
 import { v4 } from 'uuid'
@@ -10,10 +10,11 @@ import dayjs from 'dayjs'
 import { UserQuery } from './query/user.query'
 import { VerifyDto } from '../auth/dto/verify-auth.dto'
 import { RegisterDto } from '../auth/dto/create-auth.dto'
+import { MailerService } from '@nestjs-modules/mailer'
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) { }
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>, private mailerService: MailerService) { }
 
   async isEmailExist(email: string) {
     const isExist = await this.userModel.exists({ email })
@@ -111,6 +112,7 @@ export class UsersService {
       if (await this.isEmailExist(email)) throw new BadRequestException('Email đã tồn tại')
       const hashedPassword = await hashPassword(password)
       const user = await this.userModel.create({ ...registerDto, password: hashedPassword, codeId: v4(), codeExpired: dayjs().add(5, 'minutes') })
+      // await this.sendMail(user)
       return user
     } catch (error) {
       throw new BadRequestException(error)
@@ -127,6 +129,22 @@ export class UsersService {
       } else {
         throw new BadRequestException('Mã đã hết hạn')
       }
+    } catch (error) {
+      throw new BadRequestException(error)
+    }
+  }
+
+  async sendMail(user: mongoose.Document<unknown, {}, User> & User) {
+    try {
+      await this.mailerService.sendMail({
+        to: user.email,
+        subject: 'Activate your account',
+        template: 'verify',
+        context: {
+          name: user?.name ?? user?.email,
+          activationCode: user.codeId
+        }
+      })
     } catch (error) {
       throw new BadRequestException(error)
     }

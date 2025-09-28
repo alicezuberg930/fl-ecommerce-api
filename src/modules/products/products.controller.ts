@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseIntercepto
 import { ProductsService } from './products.service'
 import { ResponseMessage } from 'src/common/decorators/public.decorator'
 import { ProductData } from './dto/create-product.dto'
-import { UpdatePostData } from './dto/update-product.dto'
+import { UpdateProductData } from './dto/update-product.dto'
 import { QueryProduct } from './dto/query-product'
 import { FilesInterceptor } from '@nestjs/platform-express'
 import { multerOptions } from 'src/common/helpers/options/multer.options'
@@ -31,9 +31,10 @@ export class ProductsController {
   }
 
   @ResponseMessage('Product updated successfully')
+  @UseInterceptors(FilesInterceptor("images", Infinity, multerOptions({ allowedFields: [] })))
   @Patch(':id')
-  update(@Param('id') id: string, @Body() postData: UpdatePostData) {
-    return this.productsService.update(id, postData)
+  update(@UploadedFiles() files: Express.Multer.File[], @Param('id') id: string, @Body() data: UpdateProductData) {
+    return this.productsService.update(id, data, files)
   }
 
   @ResponseMessage('Product deleted successfully')

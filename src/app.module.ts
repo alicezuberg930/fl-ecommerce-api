@@ -18,6 +18,8 @@ import { IpWhitelistMiddleware } from './common/middleware/ip.whitelist';
 import { BrandModule } from './modules/brands/brands.module';
 import { ProductsModule } from './modules/products/products.module';
 import { RatingModule } from './modules/ratings/ratings.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 @Module({
   imports: [
@@ -38,7 +40,33 @@ import { RatingModule } from './modules/ratings/ratings.module';
     FileModule,
     BrandModule,
     ProductsModule,
-    RatingModule
+    RatingModule,
+    // Send mail config module
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        transport: {
+          host: configService.get<string>('MAIL_HOST'),
+          port: configService.get<number>('MAIL_PORT'),
+          secure: true,
+          auth: {
+            user: configService.get<string>('MAIL_USERNAME'),
+            pass: configService.get<string>('MAIL_PASSWORD'),
+          },
+        },
+        defaults: {
+          from: '"No Reply" <no-reply@future-life>',
+        },
+        template: {
+          dir: process.cwd() + '/src/mail/templates',
+          adapter: new HandlebarsAdapter(),
+          options: {
+            strict: true,
+          }
+        },
+      }),
+      inject: [ConfigService],
+    }),
   ],
   controllers: [AppController],
   providers: [

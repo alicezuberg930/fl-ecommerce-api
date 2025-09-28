@@ -20,17 +20,11 @@ export class AuthService {
   }
 
   async login(user: mongoose.Document<unknown, {}, User> & User) {
-    const payload = { _id: user._id, email: user.email }
+    const { _id, email, name, phone, address, avatar } = user
+    const payload = { _id, email }
     return {
       access_token: this.jwtService.sign(payload),
-      user: {
-        _id: user._id,
-        email: user.email,
-        name: user.name,
-        phone: user.phone ?? null,
-        address: user.address ?? null,
-        avatar: user.avatar ?? null
-      }
+      user: { _id, email, name, phone, address, avatar }
     }
   }
 

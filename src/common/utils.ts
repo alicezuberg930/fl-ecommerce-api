@@ -43,11 +43,18 @@ export const momoPayment = async ({ requestId, amount, orderId }: { requestId: s
     requestBody["signature"] = signature
     delete requestBody.accessKey
     try {
-        let response = await axios({ url: `https://test-payment.momo.vn/v2/gateway/api/create`, method: "POST", timeout: 30000, data: requestBody })
+        // fetch("https://test-payment.momo.vn/v2/gateway/api/create", {
+        //     method: "POST", headers: { "Content-Type": "application/json" },
+        //     body: JSON.stringify(requestBody)
+        // }).catch(err => console.log(err))
+        let response = await axios({ url: `https://test-payment.momo.vn/v2/gateway/api/create`, method: "POST", data: requestBody })
         return response.data
     } catch (error) {
-        if (isAxiosError(error)) throw new BadRequestException(error.response.data.message)
-        else throw new BadRequestException("Server của momo bị lỗi")
+        if (isAxiosError(error)) {
+            throw new BadRequestException(error.response.data.message)
+        } else {
+            throw new BadRequestException("Server của momo bị lỗi")
+        }
     }
 }
 

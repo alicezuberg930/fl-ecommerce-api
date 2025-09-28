@@ -1,5 +1,23 @@
-import { IsEnum, IsOptional } from "class-validator"
-import { category } from "./enum"
+import { IsOptional } from "class-validator"
+
+class Attribute {
+    @IsOptional()
+    value: string
+
+    @IsOptional()
+    price: number
+
+    @IsOptional()
+    quantity: number
+}
+
+class Variation {
+    @IsOptional()
+    name: string
+
+    @IsOptional()
+    attributes: Attribute[]
+}
 
 export class ProductData {
     @IsOptional()
@@ -29,4 +47,6 @@ export class ProductData {
     @IsOptional()
     length: number
 
+    @IsOptional()
+    variations: Variation[]
 }

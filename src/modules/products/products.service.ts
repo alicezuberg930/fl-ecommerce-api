@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose'
 import { Product, ProductDocument } from './schemas/product.schema'
 import { Model, Types } from 'mongoose'
 import { ProductData } from './dto/create-product.dto'
-import { UpdatePostData } from './dto/update-product.dto'
+import { UpdateProductData } from './dto/update-product.dto'
 import { QueryProduct } from './dto/query-product'
 import { FileService } from '../files/file.service'
 
@@ -67,13 +67,15 @@ export class ProductsService {
     }
   }
 
-  async update(_id: string, data: UpdatePostData) {
+  async update(_id: string, data: UpdateProductData, files: Express.Multer.File[]) {
     try {
       const product = await this.productModel.findById({ _id })
-      await this.fileService.delete(product.images)
-      await product.updateOne({ ...data }, { new: true })
       if (!product) throw new NotFoundException('Product not found')
-      return product
+      await this.fileService.delete(product.images)
+      let images: string | string[] = []
+      if (files) images = await this.fileService.upload(files)
+      const updatedProduct = await this.productModel.findByIdAndUpdate({ _id }, { ...data, images }, { new: true })
+      return updatedProduct
     } catch (error) {
       throw new BadRequestException(error)
     }

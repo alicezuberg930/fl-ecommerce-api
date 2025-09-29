@@ -4,7 +4,7 @@ export class BannerData {
     @IsNotEmpty({ message: "Thứ tự banner không được để trống" })
     order: number
 
-    @IsNotEmpty({ message: "Ảnh banner không được để trống" })
+    @IsOptional()
     image: string
 
     @IsOptional()

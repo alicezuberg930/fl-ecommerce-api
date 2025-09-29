@@ -15,4 +15,7 @@ export class QueryProduct {
 
     @IsOptional()
     brand: string
+
+    @IsOptional()
+    isHidden: boolean
 }

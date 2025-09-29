@@ -2,7 +2,7 @@ import { Controller, Get, Post, Delete, Body, Param, Patch, UseInterceptors, Upl
 import { CategoriesService } from './categories.service'
 import { CreateCategoryData } from './dto/create-category.dto'
 import { UpdateCategoryData } from './dto/update-category.dto'
-import { ResponseMessage } from 'src/common/decorators/public.decorator'
+import { Public, ResponseMessage } from 'src/common/decorators/public.decorator'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { multerOptions } from 'src/common/helpers/options/multer.options'
 
@@ -18,6 +18,7 @@ export class CategoriesController {
   }
 
   @ResponseMessage('Lấy danh sách ngành hàng thành công')
+  @Public()
   @Get()
   findAll() {
     return this.categoryService.findAll()
@@ -36,8 +37,9 @@ export class CategoriesController {
   }
 
   @ResponseMessage('Sửa ngành hàng thành công')
+  @UseInterceptors(FileInterceptor("logo", multerOptions({ allowedFields: [] })))
   @Patch(':id')
-  update(@Param('id') id: string, @Body() categoryData: UpdateCategoryData) {
-    return this.categoryService.update(id, categoryData)
+  update(@UploadedFile() file: Express.Multer.File, @Param('id') id: string, @Body() categoryData: UpdateCategoryData) {
+    return this.categoryService.update(id, categoryData, file)
   }
 }

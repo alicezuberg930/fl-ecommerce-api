@@ -82,7 +82,7 @@ export class CategoriesService {
     }
   }
 
-  async update(id: string, categoryData: UpdateCategoryData) {
+  async update(id: string, categoryData: UpdateCategoryData, file: Express.Multer.File) {
     const { parentCategoryId } = categoryData
     try {
       const category = await this.categoryModel.findById(id);
@@ -103,7 +103,13 @@ export class CategoriesService {
           }
         }
       }
-      await category.updateOne({ ...categoryData, parentCategoryId: new Types.ObjectId(parentCategoryId) })
+      let logo = null
+      if (file) {
+        logo = await this.fileService.upload(file)
+        await this.fileService.delete(category.logo)
+      }
+      logo = logo != null ? logo : category.logo
+      await category.updateOne({ ...categoryData, parentCategoryId, logo })
       return category
     } catch (error) {
       throw new BadRequestException(error)

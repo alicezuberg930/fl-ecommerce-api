@@ -10,13 +10,13 @@ import { FileService } from '../files/file.service'
 export class BannersService {
   constructor(@InjectModel(Banner.name) private bannerModel: Model<BannerDocument>, private fileService: FileService) { }
 
-  async create(bannerData: BannerData) {
+  async create(data: BannerData, file: Express.Multer.File) {
     try {
-      const existingBanner = await this.bannerModel.findOne({ order: bannerData.order })
-      if (existingBanner) {
-        throw new BadRequestException('Banner với thứ tự này đã tồn tại')
-      }
-      return await this.bannerModel.create({ ...bannerData })
+      const existingBanner = await this.bannerModel.findOne({ order: data.order })
+      if (existingBanner) throw new BadRequestException('Banner với thứ tự này đã tồn tại')
+      let image = null
+      if (file) image = await this.fileService.upload(file, 'banners')
+      return await this.bannerModel.create({ ...data, image })
     } catch (error) {
       throw new BadRequestException(error)
     }
@@ -31,23 +31,23 @@ export class BannersService {
     }
   }
 
-  findOne(id: number) { }
+  findOne(_id: number) { }
 
-  async update(id: string, bannerData: UpdateBannerData) {
+  async update(_id: string, data: UpdateBannerData) {
     try {
-      const banner = await this.bannerModel.findOneAndUpdate({ _id: id }, { ...bannerData }, { new: true })
-      if (!banner) throw new NotFoundException('Không tìm thấy banner')
+      const banner = await this.bannerModel.findOneAndUpdate({ _id }, { ...data }, { new: true })
+      if (!banner) throw new NotFoundException('Banner not found')
       return banner
     } catch (error) {
       throw new BadRequestException(error)
     }
   }
 
-  async remove(id: string) {
+  async remove(_id: string) {
     try {
-      const banner = await this.bannerModel.findOneAndDelete({ _id: id })
-      if (!banner) throw new NotFoundException('Không tìm thấy banner')
-      await this.fileService.delete([banner.image])
+      const banner = await this.bannerModel.findOneAndDelete({ _id })
+      if (!banner) throw new NotFoundException('Banner not found')
+      await this.fileService.delete(banner.image)
       return banner
     } catch (error) {
       throw new BadRequestException(error)

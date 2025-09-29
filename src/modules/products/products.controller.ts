@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseInterceptors, UploadedFiles } from '@nestjs/common'
 import { ProductsService } from './products.service'
-import { ResponseMessage } from 'src/common/decorators/public.decorator'
+import { Public, ResponseMessage } from 'src/common/decorators/public.decorator'
 import { ProductData } from './dto/create-product.dto'
 import { UpdateProductData } from './dto/update-product.dto'
 import { QueryProduct } from './dto/query-product'
@@ -19,12 +19,14 @@ export class ProductsController {
   }
 
   @ResponseMessage('Product list fetched successfully')
+  @Public()
   @Get()
   findAll(@Query() query: QueryProduct) {
     return this.productsService.findAll(query)
   }
 
   @ResponseMessage('Product details fetched successfully')
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productsService.findOne(id)

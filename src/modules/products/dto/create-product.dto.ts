@@ -2,21 +2,24 @@ import { IsOptional } from "class-validator"
 
 class Attribute {
     @IsOptional()
-    value: string
+    name: string
+
+    @IsOptional()
+    values: string[]
+}
+
+class Variation {
+    @IsOptional()
+    sku: string
 
     @IsOptional()
     price: number
 
     @IsOptional()
-    quantity: number
-}
-
-class Variation {
-    @IsOptional()
-    name: string
+    stock: number
 
     @IsOptional()
-    attributes: Attribute[]
+    attributeValues: Map<string, string>
 }
 
 export class ProductData {
@@ -49,4 +52,10 @@ export class ProductData {
 
     @IsOptional()
     variations: Variation[]
+
+    @IsOptional()
+    attributes: Attribute[]
+
+    @IsOptional()
+    images: string[]
 }

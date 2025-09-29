@@ -1,11 +1,16 @@
-import { Prop, Schema } from "@nestjs/mongoose"
-import { Attribute } from "./attribute.schema"
+import { Prop } from "@nestjs/mongoose"
 
-// @Schema({ timestamps: false })
 export class Variation {
-    @Prop()
-    name: string
+    @Prop({ unique: true })
+    sku: string
 
-    @Prop({ type: [Attribute], default: [] })
-    attributes: Attribute[]
+    @Prop({ type: Map, of: String })
+    attributeValues: Map<string, string>
+
+    @Prop()
+    price: number
+
+    @Prop()
+    stock: number
+    // image: string
 }

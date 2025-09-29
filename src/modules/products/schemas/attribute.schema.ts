@@ -1,13 +1,9 @@
-import { Prop, Schema } from "@nestjs/mongoose"
+import { Prop } from "@nestjs/mongoose"
 
-// @Schema({ timestamps: false })
 export class Attribute {
     @Prop()
-    value: string
+    name: string
 
     @Prop()
-    price: number
-
-    @Prop()
-    quantity: number
+    values: string[]
 }

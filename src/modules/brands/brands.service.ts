@@ -43,9 +43,12 @@ export class BrandService {
     try {
       const brand = await this.brandModel.findById({ _id })
       if (!brand) throw new NotFoundException('Brand not found')
-      await this.fileService.delete(brand.logo)
       let logo = null
-      if (file) logo = await this.fileService.upload(file)
+      if (file) {
+        logo = await this.fileService.upload(file)
+        await this.fileService.delete(brand.logo)
+      }
+      logo = logo != null ? logo : brand.logo
       const updatedBrand = await this.brandModel.findByIdAndUpdate({ _id }, { ...data, logo }, { new: true })
       return updatedBrand
     } catch (error) {

@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose"
 import { HydratedDocument, Schema as MongooseSchema, Types } from "mongoose"
 import { Variation } from "./variation.schema"
+import { Attribute } from "./attribute.schema"
 
 export type ProductDocument = HydratedDocument<Product>
 
@@ -13,7 +14,7 @@ export class Product {
     description: string
 
     @Prop({ required: [true, "Product price are required"] })
-    price: string
+    price: number
 
     @Prop({ min: 1, required: [true, "Product images are required"] })
     images: string[]
@@ -39,11 +40,18 @@ export class Product {
     @Prop({ default: false })
     isHidden: boolean
 
-    @Prop({ type: [{ type: Types.ObjectId, ref: 'Rating' }], default: [] })
-    ratings: Types.ObjectId[]
+    // @Prop({ type: [{ type: Types.ObjectId, ref: 'Rating' }], default: [] })
+    // ratings: Types.ObjectId[]
+
+    @Prop({ type: [Attribute], default: [] })
+    attributes: Attribute[]
 
     @Prop({ type: [Variation], default: [] })
     variations: Variation[]
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product)
+
+ProductSchema.index({ name: 1 }, { unique: false })
+ProductSchema.index({ category: 1 }, { unique: false })
+ProductSchema.index({ brand: 1 }, { unique: false })

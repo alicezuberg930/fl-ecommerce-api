@@ -16,7 +16,7 @@ async function bootstrap() {
   }))
   // cors configurations
   app.enableCors({
-    // origin: 'https://rok-kd-3783.vercel.app',
+    // origin: ['https://futurelifeecom.io.vn'],
     origin: '*',
     "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
     "preflightContinue": false,

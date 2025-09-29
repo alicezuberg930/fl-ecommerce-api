@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common'
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile } from '@nestjs/common'
 import { BannersService } from './banners.service'
 import { BannerData } from './dto/create-banner.dto'
 import { UpdateBannerData } from './dto/update-banner.dto'
-import { ResponseMessage } from 'src/common/decorators/public.decorator'
+import { Public, ResponseMessage } from 'src/common/decorators/public.decorator'
+import { FileInterceptor } from '@nestjs/platform-express'
+import { multerOptions } from 'src/common/helpers/options/multer.options'
 
 @Controller('banners')
 export class BannersController {
@@ -10,11 +12,13 @@ export class BannersController {
 
   @ResponseMessage('Tạo banner thành công')
   @Post()
-  create(@Body() bannerData: BannerData) {
-    return this.bannersService.create(bannerData)
+  @UseInterceptors(FileInterceptor("image", multerOptions({ allowedFields: [] })))
+  create(@UploadedFile() file: Express.Multer.File, @Body() data: BannerData) {
+    return this.bannersService.create(data, file)
   }
 
   @ResponseMessage('Lấy thông tin banner thành công')
+  @Public()
   @Get()
   findAll() {
     return this.bannersService.findAll()
@@ -27,8 +31,8 @@ export class BannersController {
 
   @ResponseMessage('Cập nhật banner thành công')
   @Patch(':id')
-  update(@Param('id') id: string, @Body() bannerData: UpdateBannerData) {
-    return this.bannersService.update(id, bannerData)
+  update(@Param('id') id: string, @Body() data: UpdateBannerData) {
+    return this.bannersService.update(id, data)
   }
 
   @ResponseMessage('Xóa banner thành công')

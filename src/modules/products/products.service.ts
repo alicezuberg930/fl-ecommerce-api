@@ -6,6 +6,7 @@ import { ProductData } from './dto/create-product.dto'
 import { UpdateProductData } from './dto/update-product.dto'
 import { QueryProduct } from './dto/query-product'
 import { FileService } from '../files/file.service'
+import { setTimeout } from 'timers/promises'
 
 @Injectable()
 export class ProductsService {
@@ -14,7 +15,7 @@ export class ProductsService {
   async create(data: ProductData, files: Express.Multer.File[]) {
     try {
       let images: string | string[] = []
-      if (files) images = await this.fileService.upload(files, 'products')
+      if (files && files.length > 0) images = await this.fileService.upload(files, 'products')
       const product = await this.productModel.create({ ...data, images })
       return product
     } catch (error) {
@@ -29,11 +30,22 @@ export class ProductsService {
       const skip = (currentPage - 1) * pageSize
       // filter options
       const filter: Record<string, any> = {}
-      if (query.name) filter.name = query.name
+      const validKeys: (keyof QueryProduct)[] = ['name', 'category', 'brand', 'isHidden']
+      for (const key of validKeys) {
+        if (query[key] !== undefined && query[key] !== null) {
+          // if (['category', 'brand'].includes(key)) {
+          //   if (Types.ObjectId.isValid(query[key] as string)) {
+          //     filter[key] = new Types.ObjectId(query[key] as string);
+          //   }
+          // } else {
+          filter[key] = query[key]
+          // }
+        }
+      }
       const totalProducts = await this.productModel.countDocuments(filter)
       const totalPages = Math.ceil(totalProducts / pageSize)
       const products = await this.productModel.find(filter)
-        .populate(['ratings',
+        .populate([
           {
             path: 'brand',
             select: '-createdAt -updatedAt'
@@ -43,6 +55,7 @@ export class ProductsService {
             select: '-parentCategoryId -subCategories -createdAt -updatedAt'
           }]
         )
+        .select(['-attributes', '-variations'])
         .limit(pageSize).skip(skip)
       return {
         data: products,
@@ -71,9 +84,12 @@ export class ProductsService {
     try {
       const product = await this.productModel.findById({ _id })
       if (!product) throw new NotFoundException('Product not found')
-      await this.fileService.delete(product.images)
       let images: string | string[] = []
-      if (files) images = await this.fileService.upload(files)
+      if (files && files.length > 0) {
+        images = await this.fileService.upload(files)
+        await this.fileService.delete(product.images)
+      }
+      images = images.length > 0 ? images : product.images
       const updatedProduct = await this.productModel.findByIdAndUpdate({ _id }, { ...data, images }, { new: true })
       return updatedProduct
     } catch (error) {

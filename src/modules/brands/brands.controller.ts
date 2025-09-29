@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, UploadedFiles, BadRequestException } from '@nestjs/common'
 import { BrandService } from './brands.service'
-import { ResponseMessage } from 'src/common/decorators/public.decorator'
+import { Public, ResponseMessage } from 'src/common/decorators/public.decorator'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { BrandData } from './dto/create-brand.dto';
 import { multerOptions } from 'src/common/helpers/options/multer.options';
@@ -17,6 +17,7 @@ export class BrandController {
   }
 
   @ResponseMessage('Brand list retrieved successfully')
+  @Public()
   @Get()
   findAll() {
     return this.brandsService.findAll()

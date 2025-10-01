@@ -8,5 +8,5 @@ export class RatingData {
     star: number
 
     @IsNotEmpty({ message: "Product ID cannot be empty" })
-    productId: string
+    product: string
 }

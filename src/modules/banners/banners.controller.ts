@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile } from '@nestjs/common'
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, InternalServerErrorException } from '@nestjs/common'
 import { BannersService } from './banners.service'
 import { BannerData } from './dto/create-banner.dto'
 import { UpdateBannerData } from './dto/update-banner.dto'

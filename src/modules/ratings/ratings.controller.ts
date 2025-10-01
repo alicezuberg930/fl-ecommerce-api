@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFiles } from '@nestjs/common'
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFiles, Query } from '@nestjs/common'
 import { RatingService } from './ratings.service'
-import { ResponseMessage } from 'src/common/decorators/public.decorator'
+import { Public, ResponseMessage } from 'src/common/decorators/public.decorator'
 import { FilesInterceptor } from '@nestjs/platform-express'
 import { RatingData } from './dto/create-rating.dto';
 import { multerOptions } from 'src/common/helpers/options/multer.options';
 import { CurrentUser } from 'src/common/decorators/id.decorator';
+import { QueryRating } from './dto/query-rating';
 
 @Controller('ratings')
 export class RatingController {
@@ -18,9 +19,10 @@ export class RatingController {
   }
 
   @ResponseMessage('Rating list retrieved successfully')
+  @Public()
   @Get()
-  findAll() {
-    return this.ratingsService.findAll()
+  findAll(@Query() query: QueryRating) {
+    return this.ratingsService.findAll(query)
   }
 
   @ResponseMessage('Rating details retrieved successfully')

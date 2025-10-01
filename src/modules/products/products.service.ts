@@ -28,7 +28,6 @@ export class ProductsService {
       const currentPage: number = +(query.page ?? 1)
       const pageSize: number = +(query.pageSize ?? 10)
       const skip = (currentPage - 1) * pageSize
-      // filter options
       const filter: Record<string, any> = {}
       const validKeys: (keyof QueryProduct)[] = ['name', 'category', 'brand', 'isHidden']
       for (const key of validKeys) {
@@ -72,7 +71,16 @@ export class ProductsService {
 
   async findOne(_id: string) {
     try {
-      let product = await this.productModel.findById({ _id })
+      let product = await this.productModel.findById({ _id }).populate([
+        {
+          path: 'brand',
+          select: '-createdAt -updatedAt'
+        },
+        {
+          path: 'category',
+          select: '-parentCategoryId -subCategories -createdAt -updatedAt'
+        }]
+      )
       if (!product) throw new NotFoundException('Product not found')
       return product
     } catch (error) {

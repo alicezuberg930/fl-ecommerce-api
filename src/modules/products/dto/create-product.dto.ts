@@ -1,6 +1,6 @@
 import { IsOptional } from "class-validator"
 
-class Attribute {
+export class Attribute {
     @IsOptional()
     name: string
 
@@ -8,7 +8,7 @@ class Attribute {
     values: string[]
 }
 
-class Variation {
+export class Variation {
     @IsOptional()
     sku: string
 

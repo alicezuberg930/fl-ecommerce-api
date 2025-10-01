@@ -75,10 +75,10 @@ export class UsersService {
     }
   }
 
-  async findOne(userId: string) {
+  async findOne(_id: string) {
     try {
-      const user = await this.userModel.findById(userId)
-      if (!user) throw new NotFoundException('Không tìm thấy người dùng')
+      const user = await this.userModel.findById({ _id }).select(['-password'])
+      if (!user) throw new NotFoundException('User not found')
       return user
     } catch (error) {
       throw new BadRequestException(error)

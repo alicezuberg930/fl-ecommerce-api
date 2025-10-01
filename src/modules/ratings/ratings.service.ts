@@ -5,6 +5,7 @@ import { Rating, RatingDocument } from './shemas/rating.schema'
 import { Model, Types } from 'mongoose'
 import { FileService } from '../files/file.service'
 import { Product, ProductDocument } from '../products/schemas/product.schema'
+import { QueryRating } from './dto/query-rating'
 
 @Injectable()
 export class RatingService {
@@ -19,22 +20,49 @@ export class RatingService {
       if (data.star > 5) throw new BadRequestException('Star cannot be higher than 5')
       let images: string | string[] = []
       if (files) images = await this.fileService.upload(files, 'ratings')
-      const rating = await this.ratingModel.create({ ...data, images, product: data.productId, user })
-      if (!Types.ObjectId.isValid(data.productId)) throw new Error('Invalid productId')
-      await this.productModel.updateOne({ _id: data.productId }, { $push: { ratings: rating._id } })
+      const rating = await this.ratingModel.create({ ...data, images, product: data.product, user })
+      // if (!Types.ObjectId.isValid(data.productId)) throw new Error('Invalid productId')
+      // await this.productModel.updateOne({ _id: data.productId }, { $push: { ratings: rating._id } })
       return rating
     } catch (error) {
       throw new BadRequestException(error)
     }
   }
 
-  async findAll() {
+  async findAll(query: QueryRating) {
     try {
-      const ratings = await this.ratingModel.find().populate([
-        { path: 'user', select: '-password -accountType -isEmailVerified -codeId -codeExpired -wallet -deliveryAddresses -createdAt -updatedAt' },
-        { path: 'product', select: '-createdAt -updatedAt' }
-      ])
-      return ratings
+      const currentPage: number = +(query.page ?? 1)
+      const pageSize: number = +(query.pageSize ?? 10)
+      const skip = (currentPage - 1) * pageSize
+      const filter: Record<string, any> = {}
+      const validKeys: (keyof QueryRating)[] = ['product']
+      for (const key of validKeys) {
+        if (query[key] !== undefined && query[key] !== null) {
+          // if (['category', 'brand'].includes(key)) {
+          //   if (Types.ObjectId.isValid(query[key] as string)) {
+          //     filter[key] = new Types.ObjectId(query[key] as string);
+          //   }
+          // } else {
+          filter[key] = query[key]
+          // }
+        }
+      }
+      const totalRatings = await this.ratingModel.countDocuments(filter)
+      const totalPages = Math.ceil(totalRatings / pageSize)
+      const ratings = await this.ratingModel.find(filter)
+        .populate([
+          { path: 'user', select: '-password -accountType -isEmailVerified -codeId -codeExpired -wallet -deliveryAddresses -createdAt -updatedAt' },
+          { path: 'product', select: '-createdAt -updatedAt -attributes -variations' }
+        ])
+        .limit(pageSize).skip(skip)
+      return {
+        data: ratings,
+        paginate: {
+          totalPages,
+          pageSize,
+          currentPage
+        }
+      }
     } catch (error) {
       throw new BadRequestException(error)
     }

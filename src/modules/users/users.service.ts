@@ -111,8 +111,8 @@ export class UsersService {
       const { email, password } = registerDto
       if (await this.isEmailExist(email)) throw new BadRequestException('Email đã tồn tại')
       const hashedPassword = await hashPassword(password)
-      const user = await this.userModel.create({ ...registerDto, password: hashedPassword, codeId: v4(), codeExpired: dayjs().add(5, 'minutes') })
-      // await this.sendMail(user)
+      const user = await this.userModel.create({ ...registerDto, password: hashedPassword, codeId: v4(), codeExpired: dayjs().add(10, 'minutes') })
+      await this.sendMail(user)
       return user
     } catch (error) {
       throw new BadRequestException(error)

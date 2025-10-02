@@ -3,14 +3,16 @@ import { CartsService } from './carts.service';
 import { CartsController } from './carts.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Cart, CartSchema } from './shemas/cart.schema';
-import { FileService } from '../files/file.service';
-import { MulterModule } from '@nestjs/platform-express';
-import { MulterConfigService } from 'src/common/helpers/options/multer.config';
+import { ProductsService } from '../products/products.service';
+import { ProductsModule } from '../products/products.module';
+import { Product, ProductSchema } from '../products/schemas/product.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Cart.name, schema: CartSchema }]),
-    // MulterModule.registerAsync({ useClass: MulterConfigService })
+    MongooseModule.forFeature([
+      { name: Cart.name, schema: CartSchema },
+      { name: Product.name, schema: ProductSchema }
+    ]),
   ],
   controllers: [CartsController],
   providers: [CartsService],

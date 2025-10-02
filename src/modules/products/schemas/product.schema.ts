@@ -16,7 +16,7 @@ export class Product {
     @Prop({ required: [true, "Product price are required"] })
     price: number
 
-    @Prop({ min: 1, required: [true, "Product images are required"] })
+    @Prop({ required: [true, "Product images are required"] })
     images: string[]
 
     @Prop({ type: Types.ObjectId, ref: 'Category', required: [true, "Category ID cannot be empty"] })

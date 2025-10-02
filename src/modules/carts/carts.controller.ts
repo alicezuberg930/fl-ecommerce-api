@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile } from '@nestjs/common'
+import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common'
 import { CartsService } from './carts.service'
 import { CartData } from './dto/create-cart.dto'
 import { UpdateCartData } from './dto/update-cart.dto'
@@ -16,15 +16,15 @@ export class CartsController {
   }
 
   @ResponseMessage('Cart items fetched successfully')
-  @Public()
   @Get()
-  findAll() {
-    return this.cartsService.findAll()
+  findAll(@CurrentUser('_id') userId: string) {
+    return this.cartsService.findAll(userId)
   }
 
+  @ResponseMessage('Cart details fetched successfully')
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.cartsService.findOne(+id)
+    return this.cartsService.findOne(id)
   }
 
   @ResponseMessage('Cart item updated successfully')
@@ -34,8 +34,8 @@ export class CartsController {
   }
 
   @ResponseMessage('Cart item deleted successfully')
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.cartsService.remove(id)
+  @Delete()
+  remove(@Body() data: { id: string | string[] }) {
+    return this.cartsService.remove(data.id)
   }
 }

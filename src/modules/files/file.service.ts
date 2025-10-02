@@ -57,17 +57,14 @@ export class FileService {
     // console.log(autoCropUrl)
   }
 
+  extractPublidId(url: string) {
+    return url.split('/').slice(-3).join('/').replace(/\.[^/.]+$/, '')
+  }
+
   async delete(fileUrls: string | string[]): Promise<void> {
     try {
       let tempURLs = Array.isArray(fileUrls) ? fileUrls : [fileUrls]
-      // Extract the public ID from the URL
-      for (let i = 0; i < tempURLs.length; i++) {
-        const publicId = tempURLs[i].split('/').slice(-2).join('/').replace(/\.[^/.]+$/, '')
-        const response = await cloudinary.uploader.destroy(publicId)
-        if (response.result !== 'ok') {
-          throw new BadRequestException(response.message)
-        }
-      }
+      await Promise.all(tempURLs.map(url => cloudinary.uploader.destroy(this.extractPublidId(url))))
     } catch (error) {
       throw new BadRequestException(error)
     }

@@ -11,13 +11,13 @@ export const multerOptions = (options: Options): MulterOptions => {
         limits: { fileSize: options.fileSize ?? 5000000 },
         fileFilter: (req, file, callback) => {
             // allow only specific file types (e.g., images)
-            const allowedTypes = /jpeg|jpg|png|gif/;
+            const allowedTypes = /jpeg|jpg|png|gif|webp/;
             const ext = file.originalname.split('.').pop().toLowerCase();
             const mimetype = allowedTypes.test(file.mimetype);
             if (ext && mimetype) {
                 callback(null, true);
             } else {
-                callback(new BadRequestException('Only images (jpg, jpeg, png, gif) are allowed'), false);
+                callback(new BadRequestException('Only images (jpg, jpeg, png, gif, webp) are allowed'), false);
             }
             // validate field names
             if (options.allowedFields.length > 0 && !options.allowedFields.includes(file.fieldname)) {

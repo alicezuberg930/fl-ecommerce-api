@@ -1,25 +1,26 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { MongooseModule } from '@nestjs/mongoose';
-import { UsersModule } from './modules/users/users.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AuthModule } from './modules/auth/auth.module';
-import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { JwtAuthGuard } from './modules/auth/passport/jwt-auth.guard';
-import { TransformInterceptor } from './common/interceptors/transform.interceptor';
-import { AllExceptionsFilter } from './common/exceptions/exception.filter';
-import { PostsModule } from './modules/posts/posts.module';
-import { BannersModule } from './modules/banners/banners.module';
-import { FileModule } from './modules/files/file.module';
-import { InformationModule } from './modules/information/information.module';
-import { CategoriesModule } from './modules/categories/categories.module';
-import { IpWhitelistMiddleware } from './common/middleware/ip.whitelist';
-import { BrandModule } from './modules/brands/brands.module';
-import { ProductsModule } from './modules/products/products.module';
-import { RatingModule } from './modules/ratings/ratings.module';
-import { MailerModule } from '@nestjs-modules/mailer';
-import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { MiddlewareConsumer, Module } from '@nestjs/common'
+import { AppController } from './app.controller'
+import { AppService } from './app.service'
+import { MongooseModule } from '@nestjs/mongoose'
+import { UsersModule } from './modules/users/users.module'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import { AuthModule } from './modules/auth/auth.module'
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core'
+import { JwtAuthGuard } from './modules/auth/passport/jwt-auth.guard'
+import { TransformInterceptor } from './common/interceptors/transform.interceptor'
+import { AllExceptionsFilter } from './common/exceptions/exception.filter'
+import { PostsModule } from './modules/posts/posts.module'
+import { BannersModule } from './modules/banners/banners.module'
+import { FileModule } from './modules/files/file.module'
+import { InformationModule } from './modules/information/information.module'
+import { CategoriesModule } from './modules/categories/categories.module'
+import { IpWhitelistMiddleware } from './common/middleware/ip.whitelist'
+import { BrandModule } from './modules/brands/brands.module'
+import { ProductsModule } from './modules/products/products.module'
+import { RatingModule } from './modules/ratings/ratings.module'
+import { MailerModule } from '@nestjs-modules/mailer'
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter'
+import { CartsModule } from './modules/carts/carts.module'
 
 @Module({
   imports: [
@@ -29,19 +30,13 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
     PostsModule,
     BannersModule,
     CategoriesModule,
-    ConfigModule.forRoot({ isGlobal: true }),
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGODB_URI'),
-      }),
-      inject: [ConfigService],
-    }),
     FileModule,
     BrandModule,
     ProductsModule,
     RatingModule,
-    // Send mail config module
+    CartsModule,
+    ConfigModule.forRoot({ isGlobal: true }),
+    // e-mail config module
     MailerModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -67,6 +62,14 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
       }),
       inject: [ConfigService],
     }),
+    // mongo db config module
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGODB_URI'),
+      }),
+      inject: [ConfigService],
+    }),
   ],
   controllers: [AppController],
   providers: [
@@ -76,8 +79,9 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
     { provide: APP_FILTER, useClass: AllExceptionsFilter }
   ],
 })
+
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(IpWhitelistMiddleware).forRoutes('*');
+    consumer.apply(IpWhitelistMiddleware).forRoutes('*')
   }
 }

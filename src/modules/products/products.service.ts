@@ -94,14 +94,13 @@ export class ProductsService {
       if (!product) throw new NotFoundException('Product not found')
       let images: string | string[] = []
       if (files && files.length > 0) {
-        images = await this.fileService.upload(files)
+        images = await this.fileService.upload(files, 'products')
         await this.fileService.delete(product.images)
       }
       images = images.length > 0 ? images : product.images
-      const updatedProduct = await this.productModel.findByIdAndUpdate({ _id }, { ...data, images }, { new: true })
-      return updatedProduct
+      return await this.productModel.findByIdAndUpdate({ _id }, { ...data, images }, { new: true })
     } catch (error) {
-      throw new BadRequestException(error)
+      throw new BadRequestException(error.message)
     }
   }
 

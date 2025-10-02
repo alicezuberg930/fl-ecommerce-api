@@ -21,8 +21,6 @@ export class RatingService {
       let images: string | string[] = []
       if (files) images = await this.fileService.upload(files, 'ratings')
       const rating = await this.ratingModel.create({ ...data, images, product: data.product, user })
-      // if (!Types.ObjectId.isValid(data.productId)) throw new Error('Invalid productId')
-      // await this.productModel.updateOne({ _id: data.productId }, { $push: { ratings: rating._id } })
       return rating
     } catch (error) {
       throw new BadRequestException(error)
@@ -51,8 +49,8 @@ export class RatingService {
       const totalPages = Math.ceil(totalRatings / pageSize)
       const ratings = await this.ratingModel.find(filter)
         .populate([
-          { path: 'user', select: '-password -accountType -isEmailVerified -codeId -codeExpired -wallet -deliveryAddresses -createdAt -updatedAt' },
-          { path: 'product', select: '-createdAt -updatedAt -attributes -variations' }
+          { path: 'user', select: '-password -codeId -codeExpired -wallet -deliveryAddresses -createdAt -updatedAt' },
+          { path: 'product', select: '-createdAt -updatedAt -attributes -variations -brand -category' }
         ])
         .limit(pageSize).skip(skip)
       return {

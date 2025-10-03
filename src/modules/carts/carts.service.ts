@@ -16,11 +16,13 @@ export class CartsService {
   async create(data: CartData, user: string) {
     try {
       const { product, variation, quantity } = data
+      let subTotal = variation.price * quantity
       const cart = await this.cartModel.findOne({ product, user, variation })
       if (cart) {
-        return this.cartModel.findOneAndUpdate({ _id: cart._id }, { quantity: cart.quantity + quantity }, { new: true })
+        subTotal = variation.price * (cart.quantity + quantity)
+        return this.cartModel.findOneAndUpdate({ _id: cart._id }, { quantity: cart.quantity + quantity, subTotal }, { new: true })
       }
-      return await this.cartModel.create({ ...data, user })
+      return await this.cartModel.create({ ...data, user, subTotal })
     } catch (error) {
       throw new BadRequestException(error)
     }
@@ -51,9 +53,11 @@ export class CartsService {
 
   async update(_id: string, data: UpdateCartData) {
     try {
-      const cart = await this.cartModel.findOneAndUpdate({ _id }, { ...data }, { new: true })
+      const { quantity } = data
+      const cart = await this.cartModel.findById({ _id })
       if (!cart) throw new NotFoundException('Cart item not found')
-      return cart
+      const subTotal = cart.variation.price * quantity
+      return await this.cartModel.findOneAndUpdate({ _id }, { ...data, subTotal }, { new: true })
     } catch (error) {
       throw new BadRequestException(error)
     }

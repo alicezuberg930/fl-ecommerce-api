@@ -4,6 +4,7 @@ import { Public, ResponseMessage } from 'src/common/decorators/public.decorator'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { BrandData } from './dto/create-brand.dto';
 import { multerOptions } from 'src/common/helpers/options/multer.options';
+import { UpdateBrandData } from './dto/update-brand.dto';
 
 @Controller('brands')
 export class BrandController {
@@ -32,7 +33,7 @@ export class BrandController {
   @ResponseMessage('Brand updated successfully')
   @Patch(':id')
   @UseInterceptors(FileInterceptor("logo", multerOptions({ allowedFields: [] })))
-  update(@Param('id') id: string, @Body() data: BrandData, @UploadedFile() file: Express.Multer.File) {
+  update(@Param('id') id: string, @Body() data: UpdateBrandData, @UploadedFile() file: Express.Multer.File) {
     return this.brandsService.update(id, data, file)
   }
 

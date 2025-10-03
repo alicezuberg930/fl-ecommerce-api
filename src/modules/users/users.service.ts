@@ -11,6 +11,7 @@ import { UserQuery } from './query/user.query'
 import { VerifyDto } from '../auth/dto/verify-auth.dto'
 import { RegisterDto } from '../auth/dto/create-auth.dto'
 import { MailerService } from '@nestjs-modules/mailer'
+import { DeliveryAddressData } from './dto/create-delivery.address.dto'
 
 @Injectable()
 export class UsersService {
@@ -145,6 +146,68 @@ export class UsersService {
           activationCode: user.codeId
         }
       })
+    } catch (error) {
+      throw new BadRequestException(error)
+    }
+  }
+
+  async findAllDeliveryAddress(userId: string) {
+    try {
+      // let user = await this.userModel.findById({ _id: userId })
+      // if (!user) throw new NotFoundException('Người dùng không tồn tại')
+      // for (let i = 0; i < user.deliveryAddresses.length; i++) {
+      //   let city = await this.locationModel.findOne({ code: user.deliveryAddresses[i].city })
+      //   let district = city.district.find(item => item.code === user.deliveryAddresses[i].district)
+      //   let ward = district.ward.find(item => item.code === user.deliveryAddresses[i].ward)
+      //   user.deliveryAddresses[i].city = city.fullName
+      //   user.deliveryAddresses[i].district = district.fullName
+      //   user.deliveryAddresses[i].ward = ward.fullName
+      // }
+      // return user.deliveryAddresses
+    } catch (error) {
+      throw new BadRequestException(error)
+    }
+  }
+
+  async createDeliveryAddress(userId: string, data: DeliveryAddressData) {
+    try {
+      if (data.isDefault == true) {
+        await this.userModel.updateOne(
+          { _id: userId, 'deliveryAddresses.isDefault': true },
+          { $set: { 'deliveryAddresses.$[].isDefault': false } },
+        )
+      }
+      const address = await this.userModel.findOneAndUpdate({ _id: userId }, { $push: { 'deliveryAddresses': data } }, { new: true })
+      return address.deliveryAddresses.at(-1)
+    } catch (error) {
+      throw new BadRequestException(error)
+    }
+  }
+
+  async updateDeliveryAddress(userId: string, data: DeliveryAddressData, id: string) {
+    try {
+      if (data.isDefault == true) {
+        await this.userModel.updateOne(
+          { _id: userId, 'deliveryAddresses.isDefault': true },
+          { $set: { 'deliveryAddresses.$[].isDefault': false } }
+        )
+      }
+      const address = await this.userModel.findOneAndUpdate(
+        { _id: userId, 'deliveryAddresses._id': new Types.ObjectId(id) },
+        { $set: { 'deliveryAddresses.$': { ...data, _id: new Types.ObjectId(id) } } },
+        { new: true }
+      )
+      if (!address) throw new NotFoundException('Không tìm thấy địa chỉ')
+      return address.deliveryAddresses
+    } catch (error) {
+      throw new BadRequestException(error)
+    }
+  }
+
+  async deleteDeliveryAddress(userId: string, id: string) {
+    try {
+      const address = await this.userModel.findOneAndUpdate({ _id: userId }, { $pull: { deliveryAddresses: { _id: id } } }, { new: true })
+      if (!address) throw new NotFoundException('Không tìm thấy địa chỉ')
     } catch (error) {
       throw new BadRequestException(error)
     }

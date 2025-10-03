@@ -105,7 +105,7 @@ export class CategoriesService {
       }
       let logo = null
       if (file) {
-        logo = await this.fileService.upload(file)
+        logo = await this.fileService.upload(file, 'categories')
         await this.fileService.delete(category.logo)
       }
       logo = logo != null ? logo : category.logo

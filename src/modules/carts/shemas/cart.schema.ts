@@ -17,6 +17,9 @@ export class Cart {
 
     @Prop()
     quantity: number
+
+    @Prop()
+    subTotal: number
 }
 
 export const CartSchema = SchemaFactory.createForClass(Cart)

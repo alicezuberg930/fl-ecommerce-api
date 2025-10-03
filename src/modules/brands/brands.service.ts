@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose'
 import { Brand, BrandDocument } from './shemas/brand.schema'
 import { Model } from 'mongoose'
 import { FileService } from '../files/file.service'
+import { UpdateBrandData } from './dto/update-brand.dto'
 
 @Injectable()
 export class BrandService {
@@ -39,13 +40,13 @@ export class BrandService {
     }
   }
 
-  async update(_id: string, data: BrandData, file: Express.Multer.File) {
+  async update(_id: string, data: UpdateBrandData, file: Express.Multer.File) {
     try {
       const brand = await this.brandModel.findById({ _id })
       if (!brand) throw new NotFoundException('Brand not found')
       let logo = null
       if (file) {
-        logo = await this.fileService.upload(file)
+        logo = await this.fileService.upload(file, 'brands')
         await this.fileService.delete(brand.logo)
       }
       logo = logo != null ? logo : brand.logo

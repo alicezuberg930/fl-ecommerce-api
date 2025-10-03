@@ -1,8 +1,7 @@
 import { IsEnum, IsNotEmpty, IsOptional, Matches } from "class-validator"
 import { addressTypes } from "./enum"
-import { Types } from "mongoose"
 
-export class DeliveryAddressDto {
+export class DeliveryAddressData {
     @IsNotEmpty({ message: "Họ tên không được trống" })
     contactName: string
 

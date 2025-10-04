@@ -8,20 +8,17 @@ export class DeliveryAddressData {
     @Matches(/^0\d{9}$/, { message: 'Phone number is invald' })
     contactPhone: string
 
-    // @IsNotEmpty({ message: "Thành phố không được trống" })
-    // city: string
+    @IsNotEmpty({ message: "Thành phố không được trống" })
+    province: string
 
-    // @IsNotEmpty({ message: "Quận không được trống" })
-    // district: string
+    @IsNotEmpty({ message: "Quận không được trống" })
+    district: string
 
-    // @IsNotEmpty({ message: "Phường không được trống" })
-    // ward: string
+    @IsNotEmpty({ message: "Phường không được trống" })
+    ward: string
 
-    // @IsOptional()
-    // street: string
-
-    @IsNotEmpty({ message: "Address cannot be empty" })
-    fullAddress: string
+    @IsOptional()
+    street: string
 
     @IsEnum(addressTypes, { message: 'Address type is invalid' })
     addressType: string

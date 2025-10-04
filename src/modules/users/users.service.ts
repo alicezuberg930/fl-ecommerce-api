@@ -14,7 +14,10 @@ import { DeliveryAddressData } from './dto/create-delivery.address.dto'
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>, private mailerService: MailerService) { }
+  constructor(
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    private mailerService: MailerService,
+  ) { }
 
   async isEmailExist(email: string) {
     const isExist = await this.userModel.exists({ email })

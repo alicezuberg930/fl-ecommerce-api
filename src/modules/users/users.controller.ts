@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, BadRequestException } from '@nestjs/common'
 import { UsersService } from './users.service'
-import { CreateUserDto } from './dto/create-user.dto'
+import { CreateUserData } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { ResponseMessage } from 'src/common/decorators/public.decorator'
 import { UserQuery } from './query/user.query'
@@ -13,8 +13,8 @@ export class UsersController {
 
   @ResponseMessage('Registered successfully')
   @Post()
-  create(@Body() userData: CreateUserDto) {
-    return this.usersService.create(userData)
+  create(@Body() data: CreateUserData) {
+    return this.usersService.create(data)
   }
 
   @ResponseMessage('User list fetched successfully')

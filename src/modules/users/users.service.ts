@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
-import { CreateUserDto } from './dto/create-user.dto'
+import { CreateUserData } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { User, UserDocument } from './schemas/user.schema'
 import mongoose, { Model, Types } from 'mongoose'
@@ -9,7 +9,6 @@ import { v4 } from 'uuid'
 import dayjs from 'dayjs'
 import { UserQuery } from './query/user.query'
 import { VerifyDto } from '../auth/dto/verify-auth.dto'
-import { RegisterDto } from '../auth/dto/create-auth.dto'
 import { MailerService } from '@nestjs-modules/mailer'
 import { DeliveryAddressData } from './dto/create-delivery.address.dto'
 
@@ -23,15 +22,15 @@ export class UsersService {
     return false
   }
 
-  async findUserByIdentifier(id: string) {
-    return await this.userModel.findOne({ email: id })
+  async findUserByIdentifier(email: string) {
+    return await this.userModel.findOne({ email })
   }
 
-  async create(userData: CreateUserDto) {
+  async create(data: CreateUserData) {
     try {
-      if (await this.isEmailExist(userData.email)) throw new BadRequestException('Email đã tồn tại')
-      const hashedPassword = await hashPassword(userData.password)
-      return await this.userModel.create({ ...userData, password: hashedPassword })
+      if (await this.isEmailExist(data.email)) throw new BadRequestException('Email đã tồn tại')
+      const hashedPassword = await hashPassword(data.password)
+      return await this.userModel.create({ ...data, password: hashedPassword })
     } catch (error) {
       throw new BadRequestException(error)
     }
@@ -86,19 +85,19 @@ export class UsersService {
     }
   }
 
-  async update(id: string, userData: UpdateUserDto) {
+  async update(_id: string, userData: UpdateUserDto) {
     try {
-      const user = await this.userModel.findById(id)
+      const user = await this.userModel.findById({ _id })
       if (!user) throw new NotFoundException('Không tìm thấy người dùng')
-      return await this.userModel.findOneAndUpdate({ _id: id }, { ...userData }, { new: true })
+      return await this.userModel.findOneAndUpdate({ _id }, { ...userData }, { new: true })
     } catch (error) {
       throw new BadRequestException(error)
     }
   }
 
-  async delete(id: string) {
+  async delete(_id: string) {
     try {
-      const user = await this.userModel.findOneAndDelete({ _id: id })
+      const user = await this.userModel.findOneAndDelete({ _id })
       if (!user) throw new NotFoundException('Không tìm thấy người dùng')
       return user
     } catch (error) {
@@ -107,12 +106,12 @@ export class UsersService {
     }
   }
 
-  async register(registerDto: RegisterDto) {
+  async register(data: CreateUserData) {
     try {
-      const { email, password } = registerDto
+      const { email, password } = data
       if (await this.isEmailExist(email)) throw new BadRequestException('Email đã tồn tại')
       const hashedPassword = await hashPassword(password)
-      const user = await this.userModel.create({ ...registerDto, password: hashedPassword, codeId: v4(), codeExpired: dayjs().add(10, 'minutes') })
+      const user = await this.userModel.create({ ...data, password: hashedPassword, codeId: v4(), codeExpired: dayjs().add(10, 'minutes') })
       await this.sendMail(user)
       return user
     } catch (error) {
@@ -151,49 +150,41 @@ export class UsersService {
     }
   }
 
-  async findAllDeliveryAddress(userId: string) {
+  async findAllDeliveryAddress(_id: string) {
     try {
-      // let user = await this.userModel.findById({ _id: userId })
-      // if (!user) throw new NotFoundException('Người dùng không tồn tại')
-      // for (let i = 0; i < user.deliveryAddresses.length; i++) {
-      //   let city = await this.locationModel.findOne({ code: user.deliveryAddresses[i].city })
-      //   let district = city.district.find(item => item.code === user.deliveryAddresses[i].district)
-      //   let ward = district.ward.find(item => item.code === user.deliveryAddresses[i].ward)
-      //   user.deliveryAddresses[i].city = city.fullName
-      //   user.deliveryAddresses[i].district = district.fullName
-      //   user.deliveryAddresses[i].ward = ward.fullName
-      // }
-      // return user.deliveryAddresses
+      let user = await this.userModel.findById({ _id })
+      if (!user) throw new NotFoundException("User not found")
+      return user.deliveryAddresses
     } catch (error) {
       throw new BadRequestException(error)
     }
   }
 
-  async createDeliveryAddress(userId: string, data: DeliveryAddressData) {
+  async createDeliveryAddress(_id: string, data: DeliveryAddressData) {
     try {
       if (data.isDefault == true) {
         await this.userModel.updateOne(
-          { _id: userId, 'deliveryAddresses.isDefault': true },
+          { _id, 'deliveryAddresses.isDefault': true },
           { $set: { 'deliveryAddresses.$[].isDefault': false } },
         )
       }
-      const address = await this.userModel.findOneAndUpdate({ _id: userId }, { $push: { 'deliveryAddresses': data } }, { new: true })
-      return address.deliveryAddresses.at(-1)
+      const user = await this.userModel.findOneAndUpdate({ _id }, { $push: { 'deliveryAddresses': data } }, { new: true })
+      return user.deliveryAddresses.at(-1)
     } catch (error) {
       throw new BadRequestException(error)
     }
   }
 
-  async updateDeliveryAddress(userId: string, data: DeliveryAddressData, id: string) {
+  async updateDeliveryAddress(_id: string, data: DeliveryAddressData, id: string) {
     try {
       if (data.isDefault == true) {
         await this.userModel.updateOne(
-          { _id: userId, 'deliveryAddresses.isDefault': true },
+          { _id, 'deliveryAddresses.isDefault': true },
           { $set: { 'deliveryAddresses.$[].isDefault': false } }
         )
       }
       const address = await this.userModel.findOneAndUpdate(
-        { _id: userId, 'deliveryAddresses._id': new Types.ObjectId(id) },
+        { _id, 'deliveryAddresses._id': new Types.ObjectId(id) },
         { $set: { 'deliveryAddresses.$': { ...data, _id: new Types.ObjectId(id) } } },
         { new: true }
       )
@@ -204,10 +195,11 @@ export class UsersService {
     }
   }
 
-  async deleteDeliveryAddress(userId: string, id: string) {
+  async deleteDeliveryAddress(userId: string, addressId: string) {
     try {
-      const address = await this.userModel.findOneAndUpdate({ _id: userId }, { $pull: { deliveryAddresses: { _id: id } } }, { new: true })
-      if (!address) throw new NotFoundException('Không tìm thấy địa chỉ')
+      const user = await this.userModel.findOneAndUpdate({ _id: userId }, { $pull: { deliveryAddresses: { _id: addressId } } }, { new: true })
+      if (!user) throw new NotFoundException('Không tìm thấy địa chỉ')
+      // return user.deliveryAddresses.find(address => address._id.toString() === addressId)
     } catch (error) {
       throw new BadRequestException(error)
     }

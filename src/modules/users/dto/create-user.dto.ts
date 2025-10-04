@@ -1,7 +1,7 @@
 import { IsEmail, IsNotEmpty, IsOptional, Length, Max } from 'class-validator';
 import { Wallet } from '../schemas/wallet.schema';
 
-export class CreateUserDto {
+export class CreateUserData {
     @IsNotEmpty({ message: "Tên người dùng không được để trống" })
     name: string;
 
@@ -11,6 +11,7 @@ export class CreateUserDto {
     @IsNotEmpty()
     password: string;
 
+    @IsOptional()
     @Length(10, 10)
     phone: string
 

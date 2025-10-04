@@ -1,9 +1,9 @@
 import { Body, Controller, FileTypeValidator, Get, HttpStatus, MaxFileSizeValidator, ParseFilePipe, ParseFilePipeBuilder, Post, Request, UploadedFile, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { RegisterDto } from './dto/create-auth.dto';
 import { LocalAuthGuard } from './passport/local-auth.guard';
 import { Public, ResponseMessage } from 'src/common/decorators/public.decorator';
 import { VerifyDto } from './dto/verify-auth.dto';
+import { CreateUserData } from '../users/dto/create-user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -19,8 +19,8 @@ export class AuthController {
 
   @Public()
   @Post("register")
-  register(@Body() registerDto: RegisterDto) {
-    return this.authService.register(registerDto)
+  register(@Body() data: CreateUserData) {
+    return this.authService.register(data)
   }
 
   @Public()

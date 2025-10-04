@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config'
 import { v2 as cloudinary } from 'cloudinary'
 import { UploadApiResponse } from 'cloudinary'
 import * as fs from 'fs'
@@ -22,20 +22,20 @@ export class FileService {
           folder: `future-life${subFolder ? `/${subFolder}` : ''}`,
           resource_type: 'image',
         }),
-      );
+      )
       // upload all files concurrently
-      const uploadResults: UploadApiResponse[] = await Promise.all(uploadPromises);
+      const uploadResults: UploadApiResponse[] = await Promise.all(uploadPromises)
       // Extract URLs from results
-      const fileUrls = uploadResults.map((result) => result.secure_url);
+      const fileUrls = uploadResults.map((result) => result.secure_url)
       // Delete all local files concurrently
       await Promise.all(
         tempFiles.map((file) =>
           fs.unlink(file.path, (err) => {
-            if (err) console.error(`Error deleting file ${file.path} :${err.message}`);
+            if (err) console.error(`Error deleting file ${file.path} :${err.message}`)
           })
         )
       )
-      return fileUrls.length > 1 ? fileUrls : fileUrls[0];
+      return fileUrls.length > 1 ? fileUrls : fileUrls[0]
     } catch (error) {
       throw new BadRequestException(error)
     }

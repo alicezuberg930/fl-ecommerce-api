@@ -11,7 +11,7 @@ export class CategoriesController {
   constructor(private readonly categoryService: CategoriesService) { }
 
   @ResponseMessage('Tạo ngành hàng thành công')
-  @UseInterceptors(FileInterceptor("logo", multerOptions({ allowedFields: [] })))
+  @UseInterceptors(FileInterceptor('logo', multerOptions({ allowedFields: [] })))
   @Post()
   create(@UploadedFile() file: Express.Multer.File, @Body() data: CreateCategoryData) {
     return this.categoryService.create(data, file)
@@ -37,7 +37,7 @@ export class CategoriesController {
   }
 
   @ResponseMessage('Sửa ngành hàng thành công')
-  @UseInterceptors(FileInterceptor("logo", multerOptions({ allowedFields: [] })))
+  @UseInterceptors(FileInterceptor('logo', multerOptions({ allowedFields: [] })))
   @Patch(':id')
   update(@UploadedFile() file: Express.Multer.File, @Param('id') id: string, @Body() categoryData: UpdateCategoryData) {
     return this.categoryService.update(id, categoryData, file)

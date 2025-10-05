@@ -85,8 +85,8 @@ export class CategoriesService {
   async update(id: string, categoryData: UpdateCategoryData, file: Express.Multer.File) {
     const { parentCategoryId } = categoryData
     try {
-      const category = await this.categoryModel.findById(id);
-      if (!category) throw new NotFoundException('Category not found');
+      const category = await this.categoryModel.findById(id)
+      if (!category) throw new NotFoundException('Category not found')
       // check if a parent category is in request body
       if (parentCategoryId) {
         // get the selected parent category

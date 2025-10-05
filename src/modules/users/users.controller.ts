@@ -1,10 +1,10 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, BadRequestException } from '@nestjs/common'
 import { UsersService } from './users.service'
 import { CreateUserData } from './dto/create-user.dto'
-import { UpdateUserDto } from './dto/update-user.dto'
+import { UpdateUserData } from './dto/update-user.dto'
 import { ResponseMessage } from 'src/common/decorators/public.decorator'
 import { UserQuery } from './query/user.query'
-import { DeliveryAddressData } from './dto/create-delivery.address.dto'
+import { DeliveryAddress } from './dto/create-delivery.address.dto'
 import { CurrentUser } from 'src/common/decorators/id.decorator'
 
 @Controller('users')
@@ -31,8 +31,8 @@ export class UsersController {
 
   @ResponseMessage('User updated successfully')
   @Patch(':id')
-  update(@Param('id') id: string, @Body() userData: UpdateUserDto) {
-    return this.usersService.update(id, userData)
+  update(@Param('id') id: string, @Body() data: UpdateUserData) {
+    return this.usersService.update(id, data)
   }
 
   @ResponseMessage('User deleted successfully')
@@ -49,13 +49,13 @@ export class UsersController {
 
   @ResponseMessage('User delivery address created successfully')
   @Post('delivery/address')
-  createDeliveryAddress(@CurrentUser('_id') userId: string, @Body() data: DeliveryAddressData) {
+  createDeliveryAddress(@CurrentUser('_id') userId: string, @Body() data: DeliveryAddress) {
     return this.usersService.createDeliveryAddress(userId, data)
   }
 
   @ResponseMessage('User delivery address updated successfully')
   @Patch('delivery/address/:id')
-  updateDeliveryAddress(@CurrentUser('_id') userId: string, @Body() data: DeliveryAddressData, @Param('id') id: string) {
+  updateDeliveryAddress(@CurrentUser('_id') userId: string, @Body() data: DeliveryAddress, @Param('id') id: string) {
     return this.usersService.updateDeliveryAddress(userId, data, id)
   }
 

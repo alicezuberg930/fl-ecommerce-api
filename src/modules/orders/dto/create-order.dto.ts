@@ -1,65 +1,44 @@
-import { IsEmail, IsNotEmpty, IsOptional, Length, Matches } from "class-validator";
+import { IsEnum, IsNotEmpty, ValidateNested } from 'class-validator'
+import { PaymentMethod } from './enum'
+import { Variation } from 'src/modules/products/dto/create-product.dto'
+import { DeliveryAddress } from 'src/modules/users/dto/create-delivery.address.dto'
+import { Type } from 'class-transformer'
 
-export class CreateOrderDto {
-    @IsNotEmpty({ message: "Giá tiền không được để trống" })
-    amount: number
+class CartItem {
+    @IsNotEmpty({ message: 'Cart ID cannot be empty' })
+    cartId: string
 
-    @IsNotEmpty({ message: "Phương thức thanh toán không được để trống" })
+    @IsNotEmpty({ message: 'Product ID cannot be empty' })
+    productId: string
+
+    @IsNotEmpty({ message: 'Quantity cannot be empty' })
+    quantity: number
+
+    @IsNotEmpty({ message: 'Variation cannot be empty' })
+    variation: Variation
+}
+
+export class OrderData {
+    @IsEnum(PaymentMethod, { message: 'Payment method is invalid' })
     paymentMethod: string
-    
-    // 
-    // @IsNotEmpty({ message: "Số điện thoại không được để trống" })
-    // @Length(10, 10, { message: "Số điện thoại phải chứa đúng 10 ký tự" })
-    // @Matches(/^[0-9]*$/, { message: "Số điện thoại chỉ được chứa số" })
-    // phone: string
 
-    // @IsOptional()
-    // telephone: string
+    @IsNotEmpty({ message: 'Sub total cannot be empty' })
+    subTotal: number
 
-    // @IsNotEmpty({ message: "Số điện thoại không được để trống" })
-    // @Length(10, 10, { message: "Số điện thoại phải chứa đúng 10 ký tự" })
-    // @Matches(/^[0-9]*$/, { message: "Số điện thoại chỉ được chứa số" })
-    // hotline: string
+    @IsNotEmpty({ message: 'Total cannot be empty' })
+    total: number
 
-    // @IsNotEmpty({ message: "Địa chỉ không được để trống" })
-    // address: string
+    @IsNotEmpty({ message: 'Discount cannot be empty' })
+    discount: number
 
-    // @IsNotEmpty({ message: "Giờ hoạt động không được để trống" })
-    // openHour: string
+    @IsNotEmpty({ message: 'Shipping cannot be empty' })
+    shipping: number
 
-    // @IsOptional()
-    // slogan: string
+    @IsNotEmpty({ message: 'Delivery address cannot be empty' })
+    billing: DeliveryAddress
 
-    // @IsOptional()
-    // googleMap: string
-
-    // @IsEmail({}, { message: "Email sai định dạng" })
-    // email: string
-
-    // @IsOptional()
-    // zaloChatURL: string
-
-    // @IsOptional()
-    // facebookChatURL: string
-
-    // @IsOptional()
-    // facebookPage: string
-
-    // @IsOptional()
-    // googlePage: string
-
-    // @IsOptional()
-    // youtubePage: string
-
-    // @IsNotEmpty({ message: "Thông tin footer không được để trống" })
-    // footerInfo: string
-
-    // @IsNotEmpty({ message: "Thông tin liên lạc không được trống" })
-    // footerContact: JSON
-
-    // @IsOptional()
-    // fax: string
-
-    // @IsOptional()
-    // facebookID: string
+    @ValidateNested({ each: true })
+    @Type(() => CartItem)
+    @IsNotEmpty({ message: 'Cart items cannot be empty' })
+    items: CartItem[]
 }

@@ -1,3 +1,3 @@
-export enum addressTypes {
-    "home", "office"
+export enum AddressType {
+    'home', 'office'
 }

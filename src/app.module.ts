@@ -22,6 +22,7 @@ import { MailerModule } from '@nestjs-modules/mailer'
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter'
 import { CartsModule } from './modules/carts/carts.module'
 import { LocationModule } from './modules/locations/locations.module'
+import { OrdersModule } from './modules/orders/orders.module'
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { LocationModule } from './modules/locations/locations.module'
     RatingModule,
     CartsModule,
     LocationModule,
+    OrdersModule,
     ConfigModule.forRoot({ isGlobal: true }),
     // e-mail config module
     MailerModule.forRootAsync({

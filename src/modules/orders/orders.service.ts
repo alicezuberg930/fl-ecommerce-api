@@ -1,8 +1,6 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common'
-import { CreateOrderDto } from './dto/create-order.dto'
-import { UpdateOrderDto } from './dto/update-order.dto'
-import axios, { isAxiosError } from 'axios'
-import crypto from 'crypto'
+import { BadRequestException, Injectable } from '@nestjs/common'
+import { OrderData } from './dto/create-order.dto'
+import { UpdateOrderData } from './dto/update-order.dto'
 import { InjectModel } from '@nestjs/mongoose'
 import { Order, OrderDocument } from './schemas/order.schema'
 import { Model } from 'mongoose'
@@ -12,20 +10,17 @@ import { momoPayment } from 'src/common/utils'
 export class OrdersService {
   constructor(@InjectModel(Order.name) private orderModel: Model<OrderDocument>) { }
 
-  async create(createOrderDto: CreateOrderDto) {
+  async create(data: OrderData, user: string) {
+    console.log(data)
     try {
-      let order = await this.orderModel.create({ ...createOrderDto })
-      if (createOrderDto.paymentMethod == "momo") {
-        const response = await momoPayment({ requestId: order.id, orderId: order.id, amount: createOrderDto.amount })
-        order = await this.orderModel.findByIdAndUpdate(order.id, { payUrl: response.payUrl, deeplink: response.deeplink }, { new: true })
-        return order
-      }
+      // let order = await this.orderModel.create({ ...data, user })
+      // if (data.paymentMethod == "momo") {
+      //   const response = await momoPayment({ requestId: order.id, orderId: order.id, amount: data.total })
+      //   order = await this.orderModel.findByIdAndUpdate(order.id, { payUrl: response.payUrl, deeplink: response.deeplink }, { new: true })
+      // return order
+      // }
     } catch (error) {
-      if (isAxiosError(error)) {
-        throw new BadRequestException(error.response.data)
-      } else {
-        throw new BadRequestException(JSON.stringify(error))
-      }
+      throw new BadRequestException(error)
     }
   }
 
@@ -38,7 +33,7 @@ export class OrdersService {
     return `This action returns a #${id} order`
   }
 
-  update(id: number, updateOrderDto: UpdateOrderDto) {
+  update(id: number, data: UpdateOrderData) {
     return `This action updates a #${id} order`
   }
 

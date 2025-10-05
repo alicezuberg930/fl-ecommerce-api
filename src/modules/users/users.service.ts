@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import { CreateUserData } from './dto/create-user.dto'
-import { UpdateUserDto } from './dto/update-user.dto'
+import { UpdateUserData } from './dto/update-user.dto'
 import { User, UserDocument } from './schemas/user.schema'
 import mongoose, { Model, Types } from 'mongoose'
 import { InjectModel } from '@nestjs/mongoose'
@@ -10,7 +10,7 @@ import dayjs from 'dayjs'
 import { UserQuery } from './query/user.query'
 import { VerifyDto } from '../auth/dto/verify-auth.dto'
 import { MailerService } from '@nestjs-modules/mailer'
-import { DeliveryAddressData } from './dto/create-delivery.address.dto'
+import { DeliveryAddress } from './dto/create-delivery.address.dto'
 
 @Injectable()
 export class UsersService {
@@ -88,11 +88,11 @@ export class UsersService {
     }
   }
 
-  async update(_id: string, userData: UpdateUserDto) {
+  async update(_id: string, data: UpdateUserData) {
     try {
       const user = await this.userModel.findById({ _id })
       if (!user) throw new NotFoundException('Không tìm thấy người dùng')
-      return await this.userModel.findOneAndUpdate({ _id }, { ...userData }, { new: true })
+      return await this.userModel.findOneAndUpdate({ _id }, { ...data }, { new: true })
     } catch (error) {
       throw new BadRequestException(error)
     }
@@ -156,14 +156,14 @@ export class UsersService {
   async findAllDeliveryAddress(_id: string) {
     try {
       let user = await this.userModel.findById({ _id })
-      if (!user) throw new NotFoundException("User not found")
+      if (!user) throw new NotFoundException('User not found')
       return user.deliveryAddresses
     } catch (error) {
       throw new BadRequestException(error)
     }
   }
 
-  async createDeliveryAddress(_id: string, data: DeliveryAddressData) {
+  async createDeliveryAddress(_id: string, data: DeliveryAddress) {
     try {
       if (data.isDefault == true) {
         await this.userModel.updateOne(
@@ -178,7 +178,7 @@ export class UsersService {
     }
   }
 
-  async updateDeliveryAddress(_id: string, data: DeliveryAddressData, id: string) {
+  async updateDeliveryAddress(_id: string, data: DeliveryAddress, id: string) {
     try {
       if (data.isDefault == true) {
         await this.userModel.updateOne(

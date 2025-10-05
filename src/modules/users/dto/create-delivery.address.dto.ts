@@ -1,29 +1,28 @@
-import { IsEnum, IsNotEmpty, IsOptional, Matches } from "class-validator"
-import { addressTypes } from "./enum"
+import { IsEnum, IsNotEmpty, IsOptional, Matches } from 'class-validator'
+import { AddressType } from './enum'
 
-export class DeliveryAddressData {
-    @IsNotEmpty({ message: "Fullname cannot be empty" })
+export class DeliveryAddress {
+    @IsNotEmpty({ message: 'Contact name cannot be empty' })
     contactName: string
 
     @Matches(/^0\d{9}$/, { message: 'Phone number is invald' })
     contactPhone: string
 
-    @IsNotEmpty({ message: "Thành phố không được trống" })
+    @IsNotEmpty({ message: 'Province cannot be empty' })
     province: string
 
-    @IsNotEmpty({ message: "Quận không được trống" })
+    @IsNotEmpty({ message: 'District cannot be empty' })
     district: string
 
-    @IsNotEmpty({ message: "Phường không được trống" })
+    @IsNotEmpty({ message: 'Ward cannot be empty' })
     ward: string
 
-    @IsOptional()
+    @IsNotEmpty({ message: 'Street name cannot be empty' })
     street: string
 
-    @IsEnum(addressTypes, { message: 'Address type is invalid' })
+    @IsEnum(AddressType, { message: 'Address type is invalid' })
     addressType: string
 
     @IsOptional()
     isDefault: boolean
 }
-

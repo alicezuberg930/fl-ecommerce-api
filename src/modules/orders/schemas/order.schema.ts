@@ -1,6 +1,6 @@
 import { Prop, SchemaFactory, Schema } from '@nestjs/mongoose'
 import { HydratedDocument, Types } from 'mongoose'
-import { PaymentMethod } from '../dto/enum'
+import { OrderStatus, PaymentMethod, PaymentStatus } from '../dto/enum'
 import { Variation } from 'src/modules/products/schemas/variation.schema'
 import { DeliveryAddress } from 'src/modules/users/schemas/delivery.address.schema'
 
@@ -23,9 +23,6 @@ export class Order {
     @Prop({ enum: PaymentMethod, required: [true, 'Payment method is invalid'] })
     paymentMethod: string
 
-    @Prop({ type: Variation, required: [true, 'Variation is required'] })
-    variation: Variation
-
     @Prop({ type: Types.ObjectId, ref: 'User', required: [true, 'Rating user is required'] })
     user: Types.ObjectId
 
@@ -46,6 +43,12 @@ export class Order {
 
     @Prop({ type: [Item], default: [] })
     items: Item[]
+
+    @Prop({ enum: OrderStatus, default: OrderStatus.pending })
+    orderStatus: OrderStatus
+
+    @Prop({ enum: PaymentStatus, default: PaymentStatus.unpaid })
+    paymentStatus: PaymentStatus
 
     @Prop()
     payUrl: string

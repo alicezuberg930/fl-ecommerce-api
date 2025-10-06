@@ -2,8 +2,8 @@ import { IsNotEmpty } from "class-validator"
 
 export class VerifyDto {
     @IsNotEmpty()
-    id: string
+    userId: string
 
     @IsNotEmpty()
-    code: string
+    codeId: string
 }

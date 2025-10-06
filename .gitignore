@@ -57,3 +57,12 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Image folder
 /uploads
+
+# vnpay dashboard: https://sandbox.vnpayment.vn/merchantv2/Home/Dashboard.htm
+# onepay dashboard: 
+# momo docs: 
+# sepay docs
+# ghtk API docs: https://api.ghtk.vn/docs/submit-order/logistic-overview
+# ghn API docs: 
+
+# google apppassword: https://myaccount.google.com/apppasswords

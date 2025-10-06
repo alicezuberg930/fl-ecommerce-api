@@ -1,22 +1,6 @@
 import { IsEnum, IsNotEmpty, ValidateNested } from 'class-validator'
 import { PaymentMethod } from './enum'
-import { Variation } from 'src/modules/products/dto/create-product.dto'
 import { DeliveryAddress } from 'src/modules/users/dto/create-delivery.address.dto'
-import { Type } from 'class-transformer'
-
-class CartItem {
-    @IsNotEmpty({ message: 'Cart ID cannot be empty' })
-    cartId: string
-
-    @IsNotEmpty({ message: 'Product ID cannot be empty' })
-    productId: string
-
-    @IsNotEmpty({ message: 'Quantity cannot be empty' })
-    quantity: number
-
-    @IsNotEmpty({ message: 'Variation cannot be empty' })
-    variation: Variation
-}
 
 export class OrderData {
     @IsEnum(PaymentMethod, { message: 'Payment method is invalid' })
@@ -37,8 +21,6 @@ export class OrderData {
     @IsNotEmpty({ message: 'Delivery address cannot be empty' })
     billing: DeliveryAddress
 
-    @ValidateNested({ each: true })
-    @Type(() => CartItem)
     @IsNotEmpty({ message: 'Cart items cannot be empty' })
-    items: CartItem[]
+    cartIds: string[]
 }

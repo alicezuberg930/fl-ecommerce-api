@@ -12,7 +12,7 @@ export class CreateUserData {
     password: string;
 
     @IsOptional()
-    @Length(10, 10, { message: 'User phone need to have at least 10 characters' })
+    // @Length(10, 10, { message: 'User phone need to have at least 10 characters' })
     phone: string
 
     @IsOptional()

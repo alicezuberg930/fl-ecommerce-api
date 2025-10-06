@@ -17,7 +17,7 @@ export class User {
     @Prop({ required: [true, "User password is requierd"] })
     password: string
 
-    @Prop({ length: 10, required: [true, 'User phone is required'] })
+    @Prop({ length: 10 })
     phone: string
 
     @Prop({ default: "" })

@@ -12,17 +12,19 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Public()
   @Post("login")
-  @ResponseMessage("Đăng nhập thành công")
+  @ResponseMessage("User login successfully")
   login(@Request() request: any) {
     return this.authService.login(request.user)
   }
 
+  @ResponseMessage('User registration successfully')
   @Public()
   @Post("register")
   register(@Body() data: CreateUserData) {
     return this.authService.register(data)
   }
 
+  @ResponseMessage('User verification successfully')
   @Public()
   @Post("verify")
   @ResponseMessage("Xác thực mã thành công")

@@ -112,9 +112,10 @@ export class UsersService {
   async register(data: CreateUserData) {
     try {
       const { email, password } = data
-      if (await this.isEmailExist(email)) throw new BadRequestException('Email đã tồn tại')
-      const hashedPassword = await hashPassword(password)
-      const user = await this.userModel.create({ ...data, password: hashedPassword, codeId: v4(), codeExpired: dayjs().add(10, 'minutes') })
+      // if (await this.isEmailExist(email)) throw new BadRequestException('Email đã tồn tại')
+      // const hashedPassword = await hashPassword(password)
+      // const user = await this.userModel.create({ ...data, password: hashedPassword, codeId: v4(), codeExpired: dayjs().add(10, 'minutes') })
+      const user = await this.userModel.findOne({ email })
       await this.sendMail(user)
       return user
     } catch (error) {
@@ -124,13 +125,14 @@ export class UsersService {
 
   async verify(data: VerifyDto) {
     try {
-      const user = await this.userModel.findOne({ _id: data.id, codeId: data.code })
-      if (!user) throw new BadRequestException('Mã không hợp lệ hoặc hết hạn')
+      const { userId, codeId } = data
+      const user = await this.userModel.findOne({ _id: userId, codeId })
+      if (!user) throw new BadRequestException('User not found')
       const isBefore = dayjs().isBefore(user.codeExpired)
       if (isBefore) {
-        await this.userModel.updateOne({ _id: data.id }, { isEmailVerified: true })
+        await this.userModel.updateOne({ _id: userId }, { isEmailVerified: true })
       } else {
-        throw new BadRequestException('Mã đã hết hạn')
+        throw new BadRequestException('Verification code is expired')
       }
     } catch (error) {
       throw new BadRequestException(error)
@@ -138,6 +140,7 @@ export class UsersService {
   }
 
   async sendMail(user: mongoose.Document<unknown, {}, User> & User) {
+    let url = process.env.ENVIRONMENT === "dev" ? process.env.FE_DEV_URL : process.env.FE_PRODUCTION_URL
     try {
       await this.mailerService.sendMail({
         to: user.email,
@@ -145,7 +148,8 @@ export class UsersService {
         template: 'verify',
         context: {
           name: user?.name ?? user?.email,
-          activationCode: user.codeId
+          url,
+          verifyUrl: `${url}/verify?codeId=${user.codeId}&userId=${user._id}`
         }
       })
     } catch (error) {

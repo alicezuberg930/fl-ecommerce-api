@@ -112,10 +112,9 @@ export class UsersService {
   async register(data: CreateUserData) {
     try {
       const { email, password } = data
-      // if (await this.isEmailExist(email)) throw new BadRequestException('Email đã tồn tại')
-      // const hashedPassword = await hashPassword(password)
-      // const user = await this.userModel.create({ ...data, password: hashedPassword, codeId: v4(), codeExpired: dayjs().add(10, 'minutes') })
-      const user = await this.userModel.findOne({ email })
+      if (await this.isEmailExist(email)) throw new BadRequestException('Email đã tồn tại')
+      const hashedPassword = await hashPassword(password)
+      const user = await this.userModel.create({ ...data, password: hashedPassword, codeId: v4(), codeExpired: dayjs().add(10, 'minutes') })
       await this.sendMail(user)
       return user
     } catch (error) {
@@ -134,6 +133,16 @@ export class UsersService {
       } else {
         throw new BadRequestException('Verification code is expired')
       }
+    } catch (error) {
+      throw new BadRequestException(error)
+    }
+  }
+
+  async resend(data: any) {
+    try {
+      const { userId } = data
+      const user = await this.userModel.findByIdAndUpdate({ _id: userId }, { codeId: v4(), codeExpired: dayjs().add(20, 'minutes') }, { new: true })
+      await this.sendMail(user)
     } catch (error) {
       throw new BadRequestException(error)
     }

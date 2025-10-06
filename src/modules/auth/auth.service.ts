@@ -35,4 +35,8 @@ export class AuthService {
   async verify(data: VerifyDto) {
     return await this.usersService.verify(data)
   }
+
+  async resend(data: any) {
+    return await this.usersService.resend(data)
+  }
 }

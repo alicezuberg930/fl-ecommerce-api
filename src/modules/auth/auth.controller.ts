@@ -31,4 +31,12 @@ export class AuthController {
   verify(@Body() data: VerifyDto) {
     return this.authService.verify(data)
   }
+
+  @ResponseMessage('User verification code resent')
+  @Public()
+  @Post("resend")
+  @ResponseMessage("Verification resent")
+  resend(@Body() data: any) {
+    return this.authService.resend(data)
+  }
 }

@@ -6,7 +6,6 @@ import { ProductData } from './dto/create-product.dto'
 import { UpdateProductData } from './dto/update-product.dto'
 import { QueryProduct } from './dto/query-product'
 import { FileService } from '../files/file.service'
-import { setTimeout } from 'timers/promises'
 
 @Injectable()
 export class ProductsService {

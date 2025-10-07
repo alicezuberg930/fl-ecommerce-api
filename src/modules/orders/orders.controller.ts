@@ -2,8 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { OrdersService } from './orders.service'
 import { OrderData } from './dto/create-order.dto'
 import { UpdateOrderData } from './dto/update-order.dto'
-import { CurrentUser } from 'src/common/decorators/id.decorator'
-import { ResponseMessage } from 'src/common/decorators/public.decorator'
+import { CurrentUser } from '../../common/decorators/id.decorator'
+import { ResponseMessage } from '../../common/decorators/public.decorator'
 
 @Controller('orders')
 export class OrdersController {

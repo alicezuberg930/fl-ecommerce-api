@@ -1,7 +1,7 @@
-import { Body, Controller, FileTypeValidator, Get, HttpStatus, MaxFileSizeValidator, ParseFilePipe, ParseFilePipeBuilder, Post, Request, UploadedFile, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './passport/local-auth.guard';
-import { Public, ResponseMessage } from 'src/common/decorators/public.decorator';
+import { Public, ResponseMessage } from '../../common/decorators/public.decorator';
 import { VerifyDto } from './dto/verify-auth.dto';
 import { CreateUserData } from '../users/dto/create-user.dto';
 

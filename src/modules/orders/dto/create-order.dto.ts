@@ -1,6 +1,6 @@
-import { IsEnum, IsNotEmpty, ValidateNested } from 'class-validator'
+import { IsEnum, IsNotEmpty } from 'class-validator'
 import { PaymentMethod } from './enum'
-import { DeliveryAddress } from 'src/modules/users/dto/create-delivery.address.dto'
+import { DeliveryAddress } from '../../../modules/users/dto/create-delivery.address.dto'
 
 export class OrderData {
     @IsEnum(PaymentMethod, { message: 'Payment method is invalid' })

@@ -1,10 +1,10 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFiles, Query } from '@nestjs/common'
 import { RatingService } from './ratings.service'
-import { Public, ResponseMessage } from 'src/common/decorators/public.decorator'
+import { Public, ResponseMessage } from '../../common/decorators/public.decorator'
 import { FilesInterceptor } from '@nestjs/platform-express'
 import { RatingData } from './dto/create-rating.dto';
-import { multerOptions } from 'src/common/helpers/options/multer.options';
-import { CurrentUser } from 'src/common/decorators/id.decorator';
+import { multerOptions } from '../../common/helpers/options/multer.options';
+import { CurrentUser } from '../../common/decorators/id.decorator';
 import { QueryRating } from './dto/query-rating';
 
 @Controller('ratings')

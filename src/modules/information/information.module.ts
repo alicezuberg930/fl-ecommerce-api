@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-
 import { MongooseModule } from '@nestjs/mongoose';
 import { Information, InformationSchema } from './schemas/information.schemas';
 import { InformationController } from './information.controller';

@@ -1,6 +1,6 @@
 import { Controller, Get, Param } from '@nestjs/common'
 import { LocationService } from './locations.service'
-import { Public, ResponseMessage } from 'src/common/decorators/public.decorator'
+import { Public, ResponseMessage } from '../../common/decorators/public.decorator'
 
 @Controller('locations')
 export class LocationController {

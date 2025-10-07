@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { UsersService } from '../users/users.service'
-import { comparePassword } from 'src/common/utils'
+import { comparePassword } from '../../common/utils'
 import { JwtService } from '@nestjs/jwt'
 import mongoose from 'mongoose'
 import { User } from '../users/schemas/user.schema'

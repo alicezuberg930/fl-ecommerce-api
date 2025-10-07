@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { FileService } from './file.service';
 import { FileController } from './file.controller';
 import { MulterModule } from '@nestjs/platform-express';
-import { MulterConfigService } from 'src/common/helpers/options/multer.config';
+import { MulterConfigService } from '../../common/helpers/options/multer.config';
 
 @Module({
   imports: [

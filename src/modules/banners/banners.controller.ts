@@ -2,9 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, Upl
 import { BannersService } from './banners.service'
 import { BannerData } from './dto/create-banner.dto'
 import { UpdateBannerData } from './dto/update-banner.dto'
-import { Public, ResponseMessage } from 'src/common/decorators/public.decorator'
+import { Public, ResponseMessage } from '../../common/decorators/public.decorator'
 import { FileInterceptor } from '@nestjs/platform-express'
-import { multerOptions } from 'src/common/helpers/options/multer.options'
+import { multerOptions } from '../../common/helpers/options/multer.options'
 
 @Controller('banners')
 export class BannersController {

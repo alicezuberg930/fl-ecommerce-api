@@ -5,7 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Banner, BannerSchema } from './shemas/banner.schema';
 import { FileService } from '../files/file.service';
 import { MulterModule } from '@nestjs/platform-express';
-import { MulterConfigService } from 'src/common/helpers/options/multer.config';
+import { MulterConfigService } from '../../common/helpers/options/multer.config';
 
 @Module({
   imports: [

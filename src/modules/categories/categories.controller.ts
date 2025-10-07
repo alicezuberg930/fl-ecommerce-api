@@ -2,9 +2,9 @@ import { Controller, Get, Post, Delete, Body, Param, Patch, UseInterceptors, Upl
 import { CategoriesService } from './categories.service'
 import { CreateCategoryData } from './dto/create-category.dto'
 import { UpdateCategoryData } from './dto/update-category.dto'
-import { Public, ResponseMessage } from 'src/common/decorators/public.decorator'
+import { Public, ResponseMessage } from '../../common/decorators/public.decorator'
 import { FileInterceptor } from '@nestjs/platform-express'
-import { multerOptions } from 'src/common/helpers/options/multer.options'
+import { multerOptions } from '../../common/helpers/options/multer.options'
 
 @Controller('categories')
 export class CategoriesController {

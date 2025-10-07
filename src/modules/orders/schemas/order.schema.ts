@@ -1,8 +1,8 @@
 import { Prop, SchemaFactory, Schema } from '@nestjs/mongoose'
 import { HydratedDocument, Types } from 'mongoose'
 import { OrderStatus, PaymentMethod, PaymentStatus } from '../dto/enum'
-import { Variation } from 'src/modules/products/schemas/variation.schema'
-import { DeliveryAddress } from 'src/modules/users/schemas/delivery.address.schema'
+import { Variation } from '../../../modules/products/schemas/variation.schema'
+import { DeliveryAddress } from '../../../modules/users/schemas/delivery.address.schema'
 
 export type OrderDocument = HydratedDocument<Order>
 

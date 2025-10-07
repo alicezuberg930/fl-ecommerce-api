@@ -4,7 +4,7 @@ import { UpdateOrderData } from './dto/update-order.dto'
 import { InjectModel } from '@nestjs/mongoose'
 import { Order, OrderDocument } from './schemas/order.schema'
 import { Model } from 'mongoose'
-import { momoPayment, vnpayPayment } from 'src/common/utils'
+import { momoPayment, vnpayPayment } from '../../common/utils'
 import { Cart, CartDocument } from '../carts/shemas/cart.schema'
 import { PaymentMethod, PaymentStatus } from './dto/enum'
 

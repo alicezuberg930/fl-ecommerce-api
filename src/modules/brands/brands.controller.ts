@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, UploadedFiles, BadRequestException } from '@nestjs/common'
 import { BrandService } from './brands.service'
-import { Public, ResponseMessage } from 'src/common/decorators/public.decorator'
+import { Public, ResponseMessage } from '../../common/decorators/public.decorator'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { BrandData } from './dto/create-brand.dto';
-import { multerOptions } from 'src/common/helpers/options/multer.options';
+import { multerOptions } from '../../common/helpers/options/multer.options';
 import { UpdateBrandData } from './dto/update-brand.dto';
 
 @Controller('brands')

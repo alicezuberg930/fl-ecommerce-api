@@ -1,11 +1,11 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseInterceptors, UploadedFiles } from '@nestjs/common'
 import { ProductsService } from './products.service'
-import { Public, ResponseMessage } from 'src/common/decorators/public.decorator'
+import { Public, ResponseMessage } from '../../common/decorators/public.decorator'
 import { ProductData } from './dto/create-product.dto'
 import { UpdateProductData } from './dto/update-product.dto'
 import { QueryProduct } from './dto/query-product'
 import { FilesInterceptor } from '@nestjs/platform-express'
-import { multerOptions } from 'src/common/helpers/options/multer.options'
+import { multerOptions } from '../../common/helpers/options/multer.options'
 
 @Controller('products')
 export class ProductsController {

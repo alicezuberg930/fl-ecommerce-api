@@ -1,5 +1,5 @@
-import { IsNotEmpty, IsOptional } from "class-validator";
-import { Variation } from "src/modules/products/dto/create-product.dto";
+import { IsNotEmpty } from "class-validator";
+import { Variation } from "../../../modules/products/dto/create-product.dto";
 
 export class CartData {
     @IsNotEmpty({ message: "Product ID cannot be empty" })

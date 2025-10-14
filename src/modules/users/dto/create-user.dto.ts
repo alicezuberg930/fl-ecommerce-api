@@ -20,4 +20,7 @@ export class CreateUserData {
 
     @IsOptional()
     avatar: string
+
+    @IsOptional()
+    provider: string
 }

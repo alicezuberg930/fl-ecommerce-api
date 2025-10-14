@@ -90,7 +90,6 @@ import { MailerModule } from '@nestjs-modules/mailer'
     { provide: APP_FILTER, useClass: AllExceptionsFilter }
   ],
 })
-
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(IpWhitelistMiddleware).forRoutes('*')

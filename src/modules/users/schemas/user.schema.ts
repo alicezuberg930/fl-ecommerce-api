@@ -3,6 +3,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { HydratedDocument } from 'mongoose'
 import { Wallet } from './wallet.schema'
 import { DeliveryAddress } from './delivery.address.schema'
+import { Provider } from './enum'
 
 export type UserDocument = HydratedDocument<User>
 
@@ -14,17 +15,17 @@ export class User {
     @Prop({ required: [true, "User email is requierd"] })
     email: string
 
-    @Prop({ required: [true, "User password is requierd"] })
+    @Prop()
     password: string
 
     @Prop({ length: 10 })
     phone: string
 
-    @Prop({ default: "" })
+    @Prop({ default: null })
     avatar: string
 
-    @Prop({ default: "LOCAL" })
-    accountType: string
+    @Prop({ enum: Provider, default: Provider.credentials })
+    provider: Provider
 
     @Prop({ default: false })
     isEmailVerified: boolean

@@ -4,13 +4,14 @@ import { UpdateUserData } from './dto/update-user.dto'
 import { User, UserDocument } from './schemas/user.schema'
 import mongoose, { Model, Types } from 'mongoose'
 import { InjectModel } from '@nestjs/mongoose'
-import { hashPassword } from '../../common/utils'
+import { hashPassword } from '../../common/crypto'
 import { v4 } from 'uuid'
 import dayjs from 'dayjs'
 import { UserQuery } from './query/user.query'
 import { VerifyDto } from '../auth/dto/verify-auth.dto'
 import { MailerService } from '@nestjs-modules/mailer'
 import { DeliveryAddress } from './dto/create-delivery.address.dto'
+import { Provider } from './schemas/enum'
 
 @Injectable()
 export class UsersService {
@@ -19,21 +20,17 @@ export class UsersService {
     private mailerService: MailerService,
   ) { }
 
-  async isEmailExist(email: string) {
-    const isExist = await this.userModel.exists({ email })
-    if (isExist) return true
-    return false
-  }
-
-  async findUserByIdentifier(email: string) {
-    return await this.userModel.findOne({ email })
+  async isUserExist(email: string, provider: Provider) {
+    const user = await this.userModel.exists({ email, provider })
+    return !!user
   }
 
   async create(data: CreateUserData) {
     try {
-      if (await this.isEmailExist(data.email)) throw new BadRequestException('Email đã tồn tại')
-      const hashedPassword = await hashPassword(data.password)
-      return await this.userModel.create({ ...data, password: hashedPassword })
+      const isExist = await this.isUserExist(data.email, Provider[data.provider])
+      if (isExist) throw new BadRequestException('User already exist')
+      const password = await hashPassword(data.password)
+      return await this.userModel.create({ ...data, password })
     } catch (error) {
       throw new BadRequestException(error)
     }
@@ -91,7 +88,7 @@ export class UsersService {
   async update(_id: string, data: UpdateUserData) {
     try {
       const user = await this.userModel.findById({ _id })
-      if (!user) throw new NotFoundException('Không tìm thấy người dùng')
+      if (!user) throw new NotFoundException('User not found')
       return await this.userModel.findOneAndUpdate({ _id }, { ...data }, { new: true })
     } catch (error) {
       throw new BadRequestException(error)
@@ -111,8 +108,8 @@ export class UsersService {
 
   async register(data: CreateUserData) {
     try {
-      const { email, password } = data
-      if (await this.isEmailExist(email)) throw new BadRequestException('Email đã tồn tại')
+      const { email, password, provider } = data
+      if (await this.isUserExist(email, Provider[provider])) throw new BadRequestException('User already exist')
       const hashedPassword = await hashPassword(password)
       const user = await this.userModel.create({ ...data, password: hashedPassword, codeId: v4(), codeExpired: dayjs().add(10, 'minutes') })
       await this.sendMail(user)

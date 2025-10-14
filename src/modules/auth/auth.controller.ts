@@ -1,20 +1,19 @@
 import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LocalAuthGuard } from './passport/local-auth.guard';
 import { Public, ResponseMessage } from '../../common/decorators/public.decorator';
 import { VerifyDto } from './dto/verify-auth.dto';
 import { CreateUserData } from '../users/dto/create-user.dto';
+import { LoginData } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) { }
 
-  @UseGuards(LocalAuthGuard)
   @Public()
   @Post("login")
   @ResponseMessage("User login successfully")
-  login(@Request() request: any) {
-    return this.authService.login(request.user)
+  login(@Body() request: LoginData) {
+    return this.authService.login(request)
   }
 
   @ResponseMessage('User registration successfully')

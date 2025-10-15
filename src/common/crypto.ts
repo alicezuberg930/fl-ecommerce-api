@@ -16,6 +16,18 @@ export const comparePassword = async (
     return await bcrypt.compare(password, hashedPassword)
 }
 
+export const separateNumberAndLetter = (value: string) => {
+    value = value.trim();
+    const match = value.match(/^(\d+(?:\.\d+)?)\s*([a-zA-Z]+)$/i);
+    if (match) {
+        return {
+            number: parseFloat(match[1]),
+            unit: match[2].toLowerCase()
+        }
+    }
+    return null
+}
+
 let secretKey = 'K951B6PE1waDMi640xX08PD3vg6EkVlz'
 
 export const momoPayment = async ({

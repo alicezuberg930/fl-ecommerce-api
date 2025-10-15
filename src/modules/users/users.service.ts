@@ -8,7 +8,7 @@ import { hashPassword } from '../../common/crypto'
 import { v4 } from 'uuid'
 import dayjs from 'dayjs'
 import { UserQuery } from './query/user.query'
-import { VerifyDto } from '../auth/dto/verify-auth.dto'
+import { VerifyData } from '../auth/dto/verify-auth.dto'
 import { MailerService } from '@nestjs-modules/mailer'
 import { DeliveryAddress } from './dto/create-delivery.address.dto'
 import { Provider } from './schemas/enum'
@@ -20,20 +20,22 @@ export class UsersService {
     private mailerService: MailerService,
   ) { }
 
-  async isUserExist(email: string, provider: Provider) {
-    const user = await this.userModel.exists({ email, provider })
-    return !!user
-  }
-
   async create(data: CreateUserData) {
     try {
-      const isExist = await this.isUserExist(data.email, Provider[data.provider])
-      if (isExist) throw new BadRequestException('User already exist')
-      const password = await hashPassword(data.password)
-      return await this.userModel.create({ ...data, password })
+      const { email, password } = data
+      if (await this.isUserExist(email, Provider.credentials)) throw new BadRequestException('User already exist')
+      const hashedPassword = await hashPassword(password)
+      const user = await this.userModel.create({ ...data, password: hashedPassword, codeId: v4(), codeExpired: dayjs().add(10, 'minutes') })
+      await this.sendMail(user)
+      return user
     } catch (error) {
       throw new BadRequestException(error)
     }
+  }
+
+  async isUserExist(email: string, provider: Provider) {
+    const user = await this.userModel.exists({ email, provider })
+    return !!user
   }
 
   async findAll(query: UserQuery) {
@@ -106,20 +108,7 @@ export class UsersService {
     }
   }
 
-  async register(data: CreateUserData) {
-    try {
-      const { email, password, provider } = data
-      if (await this.isUserExist(email, Provider[provider])) throw new BadRequestException('User already exist')
-      const hashedPassword = await hashPassword(password)
-      const user = await this.userModel.create({ ...data, password: hashedPassword, codeId: v4(), codeExpired: dayjs().add(10, 'minutes') })
-      await this.sendMail(user)
-      return user
-    } catch (error) {
-      throw new BadRequestException(error)
-    }
-  }
-
-  async verify(data: VerifyDto) {
+  async verifyAccount(data: VerifyData) {
     try {
       const { userId, codeId } = data
       const user = await this.userModel.findOne({ _id: userId, codeId })
@@ -135,7 +124,7 @@ export class UsersService {
     }
   }
 
-  async resend(data: any) {
+  async resendMail(data: any) {
     try {
       const { userId } = data
       const user = await this.userModel.findByIdAndUpdate({ _id: userId }, { codeId: v4(), codeExpired: dayjs().add(20, 'minutes') }, { new: true })

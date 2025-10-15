@@ -1,6 +1,6 @@
 import { IsNotEmpty } from "class-validator"
 
-export class VerifyDto {
+export class VerifyData {
     @IsNotEmpty()
     userId: string
 

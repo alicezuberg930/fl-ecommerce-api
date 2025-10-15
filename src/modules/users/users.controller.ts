@@ -11,12 +11,6 @@ import { CurrentUser } from '../../common/decorators/id.decorator'
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
-  @ResponseMessage('Registered successfully')
-  @Post()
-  create(@Body() data: CreateUserData) {
-    return this.usersService.create(data)
-  }
-
   @ResponseMessage('User list fetched successfully')
   @Get()
   findAll(@Query() query: UserQuery) {

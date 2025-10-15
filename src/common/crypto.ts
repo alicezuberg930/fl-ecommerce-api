@@ -1,16 +1,31 @@
-const bcrypt = require("bcrypt")
+import bcrypt from "bcrypt"
 import { BadRequestException } from '@nestjs/common'
 import axios, { isAxiosError } from 'axios'
 import crypto from 'crypto'
 import qs from "qs"
 import { dateFormat, HashAlgorithm, ProductCode, verifySecureHash, VNPay, VnpLocale } from 'vnpay'
 
-export const hashPassword = async (password: string) => {
+export const hashPassword = async (password: string): Promise<string> => {
     return await bcrypt.hash(password, 10)
 }
 
-export const comparePassword = async (password: string, hashedPassword: string) => {
+export const comparePassword = async (
+    password: string,
+    hashedPassword: string
+): Promise<boolean> => {
     return await bcrypt.compare(password, hashedPassword)
+}
+
+export const separateNumberAndLetter = (value: string) => {
+    value = value.trim();
+    const match = value.match(/^(\d+(?:\.\d+)?)\s*([a-zA-Z]+)$/i);
+    if (match) {
+        return {
+            number: parseFloat(match[1]),
+            unit: match[2].toLowerCase()
+        }
+    }
+    return null
 }
 
 let secretKey = 'K951B6PE1waDMi640xX08PD3vg6EkVlz'

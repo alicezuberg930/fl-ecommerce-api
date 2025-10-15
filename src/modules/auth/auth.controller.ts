@@ -1,23 +1,22 @@
 import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LocalAuthGuard } from './passport/local-auth.guard';
 import { Public, ResponseMessage } from '../../common/decorators/public.decorator';
-import { VerifyDto } from './dto/verify-auth.dto';
+import { VerifyData } from './dto/verify-auth.dto';
 import { CreateUserData } from '../users/dto/create-user.dto';
+import { LoginData } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) { }
 
-  @UseGuards(LocalAuthGuard)
   @Public()
   @Post("login")
   @ResponseMessage("User login successfully")
-  login(@Request() request: any) {
-    return this.authService.login(request.user)
+  login(@Body() request: LoginData) {
+    return this.authService.login(request)
   }
 
-  @ResponseMessage('User registration successfully')
+  @ResponseMessage('Check your email to verify your account')
   @Public()
   @Post("register")
   register(@Body() data: CreateUserData) {
@@ -28,15 +27,15 @@ export class AuthController {
   @Public()
   @Post("verify")
   @ResponseMessage("Xác thực mã thành công")
-  verify(@Body() data: VerifyDto) {
-    return this.authService.verify(data)
+  verifyAccount(@Body() data: VerifyData) {
+    return this.authService.verifyAccount(data)
   }
 
   @ResponseMessage('User verification code resent')
   @Public()
   @Post("resend")
   @ResponseMessage("Verification resent")
-  resend(@Body() data: any) {
-    return this.authService.resend(data)
+  resendMail(@Body() data: any) {
+    return this.authService.resendMail(data)
   }
 }
